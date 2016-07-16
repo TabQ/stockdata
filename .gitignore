@@ -1,0 +1,4 @@
+.metadata/
+stock_py/.settings/
+stock_py/.*
+stockdata/.idea/

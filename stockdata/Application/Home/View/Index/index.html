@@ -1,0 +1,84 @@
+<extend name="Public:base" />
+
+<block name="main-page">
+    <div class="main-page">
+        <!--grids-->
+        <div class="grids">
+            <div class="progressbar-heading grids-heading">
+                <h2>Tables</h2>
+            </div>
+            <div class="panel panel-widget">
+                <div class="tables">
+                    <h4>成交量突破：</h4>
+                    <table class="table table-bordered">
+                        <thead>
+                        <tr>
+                            <th>Choose</th>
+                            <th>No.</th>
+                            <th>Code</th>
+                            <th id="date" style="cursor:pointer;color:#67D3E0;"><span>Date&nbsp;</span><span><if condition="$Think.const.ACTION_NAME eq 'Date'"><if condition="$Think.get.desc eq 1">↓<else />↑</if></if></span></th>
+                            <th>Name</th>
+                            <th>Industry</th>
+                            <th>Close</th>
+                            <th id="p_change" style="cursor:pointer;color:#67D3E0;"><span>P_change&nbsp;</span><span><if condition="$Think.const.ACTION_NAME eq 'P_change'"><if condition="$Think.get.desc eq 1">↓<else />↑</if></if></span></th>
+                            <th id="v2ma20" style="cursor:pointer;color:#67D3E0;"><span>V2ma20&nbsp;</span><span><if condition="$Think.const.ACTION_NAME eq 'V2ma20'"><if condition="$Think.get.desc eq 1">↓<else />↑</if></if></span></th>
+                            <th id="vma20_2_max" style="cursor:pointer;color:#67D3E0;"><span>Vma20_2_max&nbsp;</span><span><if condition="$Think.const.ACTION_NAME eq 'Vma20_2_max'"><if condition="$Think.get.desc eq 1">↓<else />↑</if></if></span></th>
+                            <th id="turnover" style="cursor:pointer;color:#67D3E0;"><span>Turnover&nbsp;</span><span><if condition="$Think.const.ACTION_NAME eq 'Turnover'"><if condition="$Think.get.desc eq 1">↓<else />↑</if></if></span></th>
+                            <th>TimeToMarket</th>
+                            <th id="count" style="cursor:pointer;color:#67D3E0;"><span>Count&nbsp;</span><span><if condition="$Think.const.ACTION_NAME eq 'Count'"><if condition="$Think.get.desc eq 1">↓<else />↑</if></if></span></th>
+                            <th id="yield_rate" style="cursor:pointer;color:#67D3E0;"><span>Yield_rate&nbsp;</span><span><if condition="$Think.const.ACTION_NAME eq 'index'">↓<elseif condition="$Think.const.ACTION_NAME eq 'Yield_rate'"/><if condition="$Think.get.desc eq 1">↓<else />↑</if></if></span></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <foreach name="list" item="vo">
+                            <tr>
+                                <td><label><input name="choose" type="checkbox" value="{$vo.code}" />&nbsp;&nbsp;删除</label></td>
+                                <td>{$key+1}</td>
+                                <td id="stock_code">{$vo.code}</td>
+                                <td>{$vo.date}</td>
+                                <td>{$vo.name}</td>
+                                <td>{$vo.industry}</td>
+                                <td>{$vo.close}</td>
+                                <td>{$vo.p_change}</td>
+                                <td>{$vo.v2ma20}</td>
+                                <td>{$vo.vma20_2_max}</td>
+                                <td>{$vo.turnover}</td>
+                                <td>{$vo.timetomarket|format_date}</td>
+                                <td>{$vo.count}</td>
+                                <td>{$vo.yield_rate}</td>
+                            </tr>
+                        </foreach>
+                        </tbody>
+                    </table>
+                    <input id="manual" type="button" value="   删 除   " style="float:left;"/><div class="manu" style="float:right;">{$page}</div><div style="clear: both;"></div>
+                    <script type="text/javascript">
+                        $(function() {
+                            $('.tables th[style]').click(function() {
+                                var sort = $(this).children(':eq(1)').text();
+                                var column = $.trim($(this).children(':eq(0)').text());
+                                if(sort == '' || sort == '↑') {
+                                    window.location.href = "{:U('Index/"+column+"?desc=1')}";
+                                } else {
+                                    window.location.href = "{:U('Index/"+column+"?desc=0')}";
+                                }
+                            });
+
+                            $('#manual').click(function() {
+                                var chooseArr = [];
+                                $('input[name=choose]').each(function() {
+                                    if($(this).prop('checked')) {
+                                        chooseArr.push($(this).val());
+                                    }
+                                });
+                                var chooseStr = chooseArr.join(',');
+                                window.location.href = "{:U('Index/delete')}?items="+chooseStr;
+                            });
+                        });
+                    </script>
+                </div>
+            </div>
+        </div>
+        <!--//grids-->
+
+    </div>
+</block>

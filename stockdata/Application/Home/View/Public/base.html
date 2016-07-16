@@ -1,0 +1,111 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <block name="title"><title>标题</title></block>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <block name="keywords"><meta name="keywords" content="关键词" /></block>
+    <script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); function hideURLbar(){ window.scrollTo(0,1); } </script>
+    <!-- Bootstrap Core CSS -->
+    <css href="__PUBLIC__/css/bootstrap.css" />
+    <!-- Custom CSS -->
+    <css href="__PUBLIC__/css/style.css" />
+    <!--加入think分页样式-->
+    <css href="__PUBLIC__/css/thinkpage.css" />
+    <!-- font CSS -->
+    <link rel="icon" href="favicon.ico" type="image/x-icon" >
+    <!-- font-awesome icons -->
+    <css href="__PUBLIC__/css/font-awesome.css" />
+    <!-- //font-awesome icons -->
+    <!-- chart -->
+    <js href="__PUBLIC__/js/Chart.js" />
+    <!-- //chart -->
+    <!-- js-->
+    <js href="__PUBLIC__/js/jquery-1.11.1.min.js" />
+    <js href="__PUBLIC__/js/modernizr.custom.js" />
+    <!--webfonts-->
+    <css href="__PUBLIC__/css/fonts.useso.com.css" />
+    <!--//webfonts-->
+    <!--animate-->
+    <link href="__PUBLIC__/css/animate.css" rel="stylesheet" type="text/css" media="all">
+    <js href="__PUBLIC__/js/wow.min.js" />
+    <script>
+        new WOW().init();
+    </script>
+    <!--//end-animate-->
+    <!-- Metis Menu -->
+    <js href="__PUBLIC__/js/metisMenu.min.js" />
+    <js href="__PUBLIC__/js/custom.js" />
+    <css href="__PUBLIC__/css/custom.css" />
+    <!--//Metis Menu -->
+</head>
+
+<body class="cbp-spmenu-push">
+    <div class="main-content">
+        <!--left-fixed -navigation-->
+        <block name="navigation">
+            <include file="Public/nav" />
+        </block>
+        <!--left-fixed -navigation-->
+        <!-- header-starts -->
+        <block name="header">
+            <include file="Public/header" />
+        </block>
+        <!-- //header-ends -->
+        <!-- main content start-->
+        <div id="page-wrapper">
+            <block name="main-page"></block>
+        </div>
+        <!--footer-->
+        <div class="dev-page">
+            <!-- page footer -->
+            <!-- dev-page-footer-closed dev-page-footer-fixed -->
+            <block name="footer">
+                <include file="Public/footer" />
+            </block>
+            <!-- /page footer -->
+        </div>
+        <!--//footer-->
+    </div>
+    <!-- Classie -->
+    <script src="__PUBLIC__/js/classie.js"></script>
+    <script>
+        var menuLeft = document.getElementById( 'cbp-spmenu-s1' ),
+                showLeftPush = document.getElementById( 'showLeftPush' ),
+                body = document.body;
+
+        showLeftPush.onclick = function() {
+            classie.toggle( this, 'active' );
+            classie.toggle( body, 'cbp-spmenu-push-toright' );
+            classie.toggle( menuLeft, 'cbp-spmenu-open' );
+            disableOther( 'showLeftPush' );
+        };
+
+
+        function disableOther( button ) {
+            if( button !== 'showLeftPush' ) {
+                classie.toggle( showLeftPush, 'disabled' );
+            }
+        }
+    </script>
+    <!-- Bootstrap Core JavaScript -->
+    <js href="__PUBLIC__/js/bootstrap.min.js" />
+
+    <js href="__PUBLIC__/js/dev-loaders.js" />
+    <js href="__PUBLIC__/js/dev-layout-default.js" />
+    <js href="__PUBLIC__/js/jquery.marquee.js" />
+    <css href="__PUBLIC__/css/bootstrap.min.css" />
+
+    <js href="__PUBLIC__/js/jquery.jqcandlestick.min.js" />
+    <css href="__PUBLIC__/css/jqcandlestick.css" />
+
+    <!--max-plugin-->
+    <js href="__PUBLIC__/js/plugins.js" />
+    <!--//max-plugin-->
+
+    <!--scrolling js-->
+    <js href="__PUBLIC__/js/jquery.nicescroll.js" />
+    <js href="__PUBLIC__/js/scripts.js" />
+    <!--//scrolling js-->
+</body>
+</html>
