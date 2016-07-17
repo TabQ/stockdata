@@ -15,3 +15,7 @@ function diff_between_two_days ($day1, $day2)
     }
     return ($second1 - $second2) / 86400;
 }
+
+function last_date($lastDate) {
+    return empty($lastDate) ? '' : substr($lastDate, strrpos($lastDate, ',') + 1);
+}

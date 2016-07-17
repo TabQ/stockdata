@@ -1,2 +1,6 @@
 <?php
-echo date('Y-m-d H:i:s', 1467520218.88);
+function test($a, $b='hello', $c='world') {
+    echo $a.' '.$b.' '.$c;
+}
+
+test('lhl', $c = 'sb');

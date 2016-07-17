@@ -1,0 +1,86 @@
+<extend name="Public:base" />
+
+<block name="main-page">
+    <div class="main-page">
+        <!--grids-->
+        <div class="grids">
+            <div class="progressbar-heading grids-heading">
+                <h2>个股详情</h2>
+            </div>
+            <div class="panel panel-widget forms-panel">
+                <div class="progressbar-heading general-heading">
+                    <h4>{$info.name}({$info.code})</h4>
+                </div>
+                <div class="forms">
+                    <h3 class="title1"></h3>
+                    <div class="form-three widget-shadow">
+                        <form class="form-horizontal">
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">类型</label>
+                                <div class="col-sm-8">
+                                    <select name="typeId" id="typeId" class="form-control1">
+                                        <option value="0">请选择：</option>
+                                        <foreach name="list" item="vo">
+                                            <option value="{$vo.id}">{$vo.name}</option>
+                                        </foreach>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="cost_price" class="col-sm-2 control-label">成本价</label>
+                                <div class="col-sm-8">
+                                    <input type="text" class="form-control1" id="cost_price" name="cost_price" placeholder="请输入数字">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="date" class="col-sm-2 control-label">日期</label>
+                                <div class="col-sm-8">
+                                    <input type="text" id="date" class="form-control floating-label" name="date" placeholder="请选择">
+                                </div>
+                            </div>
+                            <button type="submit" id="confirm" class="btn btn-default">确定</button>
+                        </form>
+                    </div>
+                    <!-- date-picker -->
+                    <script type="text/javascript">
+                        $(document).ready(function()
+                        {
+                            $('#confirm').click(function(e) {
+                                var typeId = $('#typeId').val();
+                                var cost_price = $('#cost_price').val();
+                                var date = $('#date').val();
+                                if(typeId == 0 || cost_price == '' || date == '') {
+                                    alert('所有域都不能为空！');
+                                    return false;
+                                }
+
+                                $.post("{:U('Detail/index',array('code'=>$info['code']))}", {
+                                    typeId: typeId,
+                                    cost_price: cost_price,
+                                    date: date
+                                }, function(data, textStatus) {
+                                    alert(data.msg);
+                                });
+
+                                return e.preventDefault();
+                            });
+
+                            $('#date').bootstrapMaterialDatePicker
+                            ({
+                                time: false
+                            });
+
+                            $.material.init();
+                        });
+                    </script>
+                    <js href="__PUBLIC__/js/material.min.js" />
+                    <js href="__PUBLIC__/js/moment-with-locales.min.js" />
+                    <js href="__PUBLIC__/js/bootstrap-material-datetimepicker.js" />
+                    <!-- //date-picker -->
+                </div>
+            </div>
+        </div>
+        <!--//grids-->
+
+    </div>
+</block>

@@ -23,8 +23,8 @@ def diff_between_tow_days(day1, day2):
 print datetime.datetime.now()
 
 today = str(date.today())
- 
-today = '2016-01-28'
+
+today = '2016-02-15'
 
 conn = MySQLdb.connect(host="localhost", user="root", passwd="root", db="stock", charset="utf8")
 cursor = conn.cursor()
@@ -41,7 +41,7 @@ if dateRes:
     cursor.execute(sql, param)
     conn.commit()
     
-    sql = "select p.code, open, high, close, low, timeToMarket from perday_info as p, stocks_info as s where p.code = s.code and v2ma20 > 2.98 and date='" + today + "' order by v2ma20 desc, vma20_2_max"
+    sql = "select p.code, open, high, close, low, timeToMarket from perday_info as p, stocks_info as s where p.code = s.code and v2ma20 > 2.90 and date='" + today + "' order by v2ma20 desc, vma20_2_max"
     cursor.execute(sql)
     results = cursor.fetchall()
     
@@ -64,7 +64,7 @@ if dateRes:
             sql = "update focus_pool set count=count+1, other_date=%s where code=%s"
             param = (other_date, code)
         else:
-            sql = "insert into focus_pool(code, date, type, sub_type, cost_price) values(%s,%s,%s,%s,%s)"
+            sql = "insert into focus_pool(code, date, typeId, subTypeId, cost_price) values(%s,%s,%s,%s,%s)"
             param = (code, today, 1, 1, close)
             
         cursor.execute(sql, param)

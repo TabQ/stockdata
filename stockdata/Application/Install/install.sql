@@ -5,17 +5,28 @@ CREATE TABLE `focus_pool` (
   `date` char(10) NOT NULL DEFAULT '',
   `count` smallint(3) unsigned NOT NULL DEFAULT '1',
   `other_date` text NOT NULL DEFAULT '',
-  `type` tinyint(2) unsigned NOT NULL DEFAULT '0' COMMENT '类型：1.成交量突破',
-  `sub_type` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '子类型：1.自动；2.手动',
+  `typeId` tinyint(2) unsigned NOT NULL DEFAULT '0',
+  `subTypeId` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '子类型：1.自动；2.手动',
   `cost_price` double NOT NULL DEFAULT '0.00' COMMENT '成本价',
   `yield_rate` double NOT NULL DEFAULT '0.00' COMMENT '收益率',
   PRIMARY KEY (`id`),
-  KEY `yield_rate` (`yield_rate`)
+  KEY `yield_rate` (`yield_rate`),
+  UNIQUE KEY `code_type_subtype` (`code`, `typeId`, `subTypeId`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `focus_type`;
+CREATE TABLE `focus_type` (
+  `id` SMALLINT(5) unsigned NOT NULL DEFAULT 0,
+  `name` varchar(30) NOT NULL DEFAULT '',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='关注类型';
+INSERT INTO `focus_type` VALUES(1, '成交量突破');
+INSERT INTO `focus_type` VALUES(2, '上升波段');
+INSERT INTO `focus_type` VALUES(3, '横盘整理');
 
 DROP TABLE IF EXISTS `action_type`;
 CREATE TABLE `action_type` (
-  `id` SMALLINT(5) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `id` SMALLINT(5) unsigned NOT NULL DEFAULT 0,
   `name` varchar(255) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='动作类型';
@@ -52,7 +63,7 @@ CREATE TABLE `stocks_info` (
   `minPrice` double NOT NULL DEFAULT '0',
   `minPriceDate` char(10) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`),
-  KEY `code` (`code`)
+  UNIQUE KEY `code` (`code`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `hist_info`;

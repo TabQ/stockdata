@@ -9,7 +9,7 @@ print datetime.datetime.now()
 
 today = str(date.today())
 
-today = '2016-06-01'
+today = '2016-02-16'
 
 conn = MySQLdb.connect(host="localhost", user="root", passwd="root", db="stock", charset="utf8")
 cursor = conn.cursor()
@@ -27,7 +27,7 @@ if dateRes:
     cursor.execute(sql, param)
     conn.commit()
     
-    sql = "select code, cost_price from focus_pool where date < '" + today + "'"
+    sql = "select code, cost_price, id from focus_pool where date < '" + today + "'"
     cursor.execute(sql)
     fpRes = cursor.fetchall()
     
@@ -39,8 +39,8 @@ if dateRes:
         
         if pi:
             yield_rate = (pi[0] - fpRow[1]) * 100 / fpRow[1]
-            sql = "update focus_pool set yield_rate=%s where code=%s"
-            param = (yield_rate, fpRow[0])
+            sql = "update focus_pool set yield_rate=%s where id=%s"
+            param = (yield_rate, fpRow[2])
             cursor.execute(sql, param)
             conn.commit()
             

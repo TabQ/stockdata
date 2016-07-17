@@ -1053,7 +1053,7 @@ canvas.flot-overlay {
 	margin: 0 auto;
 }
 table th:first-child {
-	width: 150px;
+	/*width: 150px;*/
 }
 .gantt, .gantt2 {
 	width: 100%;
