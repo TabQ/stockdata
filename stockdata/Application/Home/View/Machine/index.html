@@ -1,0 +1,96 @@
+<extend name="Public:base" />
+
+<block name="main-page">
+    <div class="main-page">
+        <!--grids-->
+        <div class="grids">
+            <div class="progressbar-heading grids-heading">
+                <h2>关注池待处理</h2>
+            </div>
+            <div class="panel panel-widget">
+                <div class="tables">
+                    <h4>待处理列表</h4>
+                    <table class="table table-bordered">
+                        <thead>
+                        <tr>
+                            <th>Choose</th>
+                            <th>Id</th>
+                            <th>Code</th>
+                            <th style="cursor:pointer;color:#67D3E0;"><span>Date&nbsp;</span><span><if condition="$Think.const.ACTION_NAME eq 'index'">↑<elseif condition="$Think.const.ACTION_NAME eq 'Date'"/><if condition="$Think.get.desc eq 1">↓<else />↑</if></if></span></th>
+                            <th style="cursor:pointer;color:#67D3E0;"><span>Latest&nbsp;</span><span><if condition="$Think.const.ACTION_NAME eq 'Latest'"><if condition="$Think.get.desc eq 1">↓<else />↑</if></if></span></th>
+                            <th>Name</th>
+                            <th>Industry</th>
+                            <th>Cost_price</th>
+                            <th id="p_change" style="cursor:pointer;color:#67D3E0;"><span>P_change&nbsp;</span><span><if condition="$Think.const.ACTION_NAME eq 'P_change'"><if condition="$Think.get.desc eq 1">↓<else />↑</if></if></span></th>
+                            <th id="v2ma20" style="cursor:pointer;color:#67D3E0;"><span>V2ma20&nbsp;</span><span><if condition="$Think.const.ACTION_NAME eq 'V2ma20'"><if condition="$Think.get.desc eq 1">↓<else />↑</if></if></span></th>
+                            <th id="vma20_2_max" style="cursor:pointer;color:#67D3E0;"><span>Vma20_2_max&nbsp;</span><span><if condition="$Think.const.ACTION_NAME eq 'Vma20_2_max'"><if condition="$Think.get.desc eq 1">↓<else />↑</if></if></span></th>
+                            <th id="turnover" style="cursor:pointer;color:#67D3E0;"><span>Turnover&nbsp;</span><span><if condition="$Think.const.ACTION_NAME eq 'Turnover'"><if condition="$Think.get.desc eq 1">↓<else />↑</if></if></span></th>
+                            <th>TimeToMarket</th>
+                            <th id="count" style="cursor:pointer;color:#67D3E0;"><span>Count&nbsp;</span><span><if condition="$Think.const.ACTION_NAME eq 'Count'"><if condition="$Think.get.desc eq 1">↓<else />↑</if></if></span></th>
+                            <th id="yield_rate" style="cursor:pointer;color:#67D3E0;"><span>Yield_rate&nbsp;</span><span><if condition="$Think.const.ACTION_NAME eq 'Yield_rate'"><if condition="$Think.get.desc eq 1">↓<else />↑</if></if></span></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <foreach name="list" item="vo">
+                            <tr>
+                                <td><label><input name="choose" type="checkbox" value="{$vo.id}" />&nbsp;&nbsp;删除</label></td>
+                                <td>{$vo.id}</td>
+                                <td><a href="{:U('Detail/index',array('code'=>$vo['code']))}">{$vo.code}</a></td>
+                                <td>{$vo.date}</td>
+                                <td>{$vo.latest}</td>
+                                <td><a href="{:U('Detail/index',array('code'=>$vo['code']))}">{$vo.name}</a></td>
+                                <td>{$vo.industry}</td>
+                                <td>{$vo.cost_price}</td>
+                                <td>{$vo.p_change}</td>
+                                <td>{$vo.v2ma20|round=###,2}</td>
+                                <td>{$vo.vma20_2_max|round=###,2}</td>
+                                <td>{$vo.turnover}</td>
+                                <td>{$vo.timetomarket|format_date}</td>
+                                <td>{$vo.count}</td>
+                                <td>{$vo.yield_rate|round=###,2}%</td>
+                            </tr>
+                        </foreach>
+                        </tbody>
+                    </table>
+                    <input id="delete" type="button" value="   删 除   " style="float:left;"/><input id="manual" type="button" value="   完成自选   " style="float:left;margin:0 20px;"/><div class="manu" style="float:right;">{$page}</div><div style="clear: both;"></div>
+                    <script type="text/javascript">
+                        $(function() {
+                            $('.tables th[style]').click(function() {
+                                var sort = $(this).children(':eq(1)').text();
+                                var column = $.trim($(this).children(':eq(0)').text());
+
+                                if(sort == '' || sort == '↑') {
+                                    window.location.href = "{:U('Machine/"+column+"?desc=1')}";
+                                } else {
+                                    window.location.href = "{:U('Machine/"+column+"?desc=0')}";
+                                }
+                            });
+
+                            $('#delete').click(function() {
+                                var chooseArr = [];
+                                $('input[name=choose]').each(function() {
+                                    if($(this).prop('checked')) {
+                                        chooseArr.push($(this).val());
+                                    }
+                                });
+                                var chooseStr = chooseArr.join(',');
+                                window.location.href = "{:U('Machine/delete')}?ids="+chooseStr;
+                            });
+
+                            $('#manual').click(function() {
+                                var result = confirm("你确定已完成所有自选？");
+                                if(result == true) {
+                                    $.post("{:U('Machine/manual')}", {}, function(data, textStatus) {
+                                        alert(data.msg);
+                                    });
+                                }
+                            });
+                        });
+                    </script>
+                </div>
+            </div>
+        </div>
+        <!--//grids-->
+
+    </div>
+</block>

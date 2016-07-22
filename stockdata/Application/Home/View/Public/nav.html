@@ -4,19 +4,10 @@
             <div class="scrollbar scrollbar1">
                 <ul class="nav" id="side-menu">
                     <li>
-                        <a href="index.html"><i class="fa fa-home nav_icon"></i>Dashboard</a>
+                        <a href="{:U('Index/index')}" <if condition="$Think.const.MODULE_NAME eq 'Home' and $Think.const.CONTROLLER_NAME eq 'Index'">class="active"</if>><i class="fa fa-home nav_icon"></i>关注池收益率</a>
                     </li>
                     <li>
-                        <a href="#"><i class="fa fa-cogs nav_icon"></i>Components<span class="fa arrow"></span></a>
-                        <ul class="nav nav-second-level collapse">
-                            <li>
-                                <a href="progressbar.html">Progressbar</a>
-                            </li>
-                            <li>
-                                <a href="grid.html">Grid</a>
-                            </li>
-                        </ul>
-                        <!-- /nav-second-level -->
+                        <a href="{:U('Machine/index')}" <if condition="$Think.const.MODULE_NAME eq 'Home' and $Think.const.CONTROLLER_NAME eq 'Machine'">class="active"</if>><i class="fa fa-cogs nav_icon"></i>关注池待处理</a>
                     </li>
                     <li>
                         <a href="#"><i class="fa fa-book nav_icon"></i>Elements <span class="fa arrow"></span></a>
