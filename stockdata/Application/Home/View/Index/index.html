@@ -134,8 +134,13 @@
                                         chooseArr.push($(this).val());
                                     }
                                 });
-                                var chooseStr = chooseArr.join(',');
-                                window.location.href = "{:U('Index/delete')}?ids="+chooseStr;
+                                if(chooseArr.length == 0) {
+                                    alert('您还没有做出任何选择！');
+                                    return false;
+                                } else {
+                                    var chooseStr = chooseArr.join(',');
+                                    window.location.href = "{:U('Index/delete')}?ids="+chooseStr;
+                                }
                             });
                         });
                     </script>

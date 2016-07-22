@@ -42,9 +42,13 @@ class MachineController extends Controller {
     public function delete() {
         $map['id'] = array('IN', I('get.ids'));
 
-        M('focus_pool')->where($map)->delete();
+        $result = M('focus_pool')->where($map)->delete();
 
-        $this->redirect('Machine/index');
+        if($result) {
+            $this->success('操作成功！');
+        } else {
+            $this->error('操作失败！');
+        }
     }
 
     public function manual() {
