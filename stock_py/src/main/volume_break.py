@@ -59,12 +59,12 @@ if dateRes:
         if (_open == high and _open == close and _open == low) or diff_between_two_days(today, timeToMarket) < 3*30:
             continue
         
-        sql = "select * from focus_pool where code='" + code + "' and typeId=1 and subTypeId=1"
+        sql = "select id from focus_pool where code='" + code + "' and typeId=1 and subTypeId=1"
         cursor.execute(sql)
         fp_res = cursor.fetchone()
         if fp_res:
-            sql = "update focus_pool set count=count+1, latest=%s where code=%s"
-            param = (today, code)
+            sql = "update focus_pool set count=count+1, latest=%s where id=%s"
+            param = (today, fp_res[0])
         else:
             sql = "insert into focus_pool(code, date, typeId, subTypeId, cost_price) values(%s,%s,%s,%s,%s)"
             param = (code, today, 1, 1, close)

@@ -26,9 +26,9 @@ class DetailController extends Controller {
             // 添加新记录
             $result = M('focus_pool')->data($data)->add();
             if($result) {
-                $this->ajaxReturn(array('status' => 1, 'msg' => '添加成功！'));
+                $this->ajaxReturn(array('status' => 1, 'msg' => '操作成功！'));
             } else {
-                $this->ajaxReturn(array('status' => 0, 'msg' => '添加失败！'));
+                $this->ajaxReturn(array('status' => 0, 'msg' => '操作失败！'));
             }
         } else {
             $info = M('stocks_info')->where("code=$code")->field('code, name')->find();
