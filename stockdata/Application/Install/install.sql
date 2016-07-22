@@ -4,7 +4,8 @@ CREATE TABLE `focus_pool` (
   `code` varchar(10) NOT NULL DEFAULT '',
   `date` char(10) NOT NULL DEFAULT '',
   `count` smallint(3) unsigned NOT NULL DEFAULT '1',
-  `other_date` text NOT NULL DEFAULT '',
+  `latest` char(10) NOT NULL DEFAULT '',
+  `man_date` char(10) NOT NULL DEFAULT '',
   `typeId` tinyint(2) unsigned NOT NULL DEFAULT '0',
   `subTypeId` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '子类型：1.自动；2.手动',
   `cost_price` double NOT NULL DEFAULT '0.00' COMMENT '成本价',
@@ -23,6 +24,13 @@ CREATE TABLE `focus_type` (
 INSERT INTO `focus_type` VALUES(1, '成交量突破');
 INSERT INTO `focus_type` VALUES(2, '上升波段');
 INSERT INTO `focus_type` VALUES(3, '横盘整理');
+INSERT INTO `focus_type` VALUES(4, '看涨');
+INSERT INTO `focus_type` VALUES(5, '看跌');
+INSERT INTO `focus_type` VALUES(6, '出贷');
+INSERT INTO `focus_type` VALUES(7, '下降波段');
+INSERT INTO `focus_type` VALUES(8, '成交量突破回踩开始');
+INSERT INTO `focus_type` VALUES(9, '成交量突破回踩结束');
+INSERT INTO `focus_type` VALUES(10, '密切关注，随时建仓');
 
 DROP TABLE IF EXISTS `action_type`;
 CREATE TABLE `action_type` (

@@ -42,7 +42,7 @@ sql = "CREATE TABLE `stocks_info` (\
   `minPrice` double NOT NULL DEFAULT '0',\
   `minPriceDate` char(10) NOT NULL DEFAULT '',\
   PRIMARY KEY (`id`),\
-  KEY `code` (`code`)\
+  UNIQUE KEY `code` (`code`)\
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;"
 cursor.execute(sql)
 

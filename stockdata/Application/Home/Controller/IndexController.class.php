@@ -5,37 +5,39 @@ use Think\Controller;
 defined('PAGE_COUNT') or define('PAGE_COUNT', 50);
 
 class IndexController extends Controller {
-    private $today = '2016-02-16';
+    private $today;
 
-    public function index() {
-        $count = M('focus_pool')->where("focus_pool.date < '$this->today' and typeId = 1")->count();
-        $page = new \Think\Page($count, PAGE_COUNT);
-        $show = $page->show();
-
-        $list = M('focus_pool')
-            ->where("focus_pool.date < '$this->today' and typeId = 1")
-            ->join('left join stocks_info on focus_pool.code = stocks_info.code')
-            ->join('left join perday_info on focus_pool.code = perday_info.code and focus_pool.date = perday_info.date')
-            ->field('focus_pool.id, focus_pool.code, focus_pool.date, count, other_date, typeId, subTypeId, yield_rate, name, industry, close, p_change, v2ma20, vma20_2_max, turnover, timetomarket')->order('yield_rate desc')->limit($page->firstRow.','.$page->listRows)->select();
-
-        $this->assign('list', $list);
-        $this->assign('page', $show);
-
-        $this->display('Index:index');
+    protected function _initialize() {
+        $this->today = C('TODAY');
     }
 
     public function __call($name, $arguments) {
-        $count = M('focus_pool')->where("focus_pool.date < '$this->today' and typeId = 1")->count();
+        $params = I('get.');
+        extract($params);
+
+        $map['focus_pool.date'] = array('elt', $this->today);
+        !empty($typeid) && $map['typeId'] = $typeid;
+        !empty($subtypeid) && $map['subTypeId'] = $subtypeid;
+
+        $count = M('focus_pool')->where($map)->count();
         $page = new \Think\Page($count, PAGE_COUNT);
         $show = $page->show();
 
-        $sort = I('get.desc') ? ' desc' : '';
+        $sort = $name == 'index' ? 'yield_rate desc' : ($desc == 1 ? "$name desc" : "$name");
+
         $list = M('focus_pool')
-            ->where("focus_pool.date < '$this->today' and typeId = 1")
+            ->where($map)
             ->join('left join stocks_info on focus_pool.code = stocks_info.code')
             ->join('left join perday_info on focus_pool.code = perday_info.code and focus_pool.date = perday_info.date')
-            ->field('focus_pool.id, focus_pool.code, focus_pool.date, count, other_date, typeId, subTypeId, yield_rate, name, industry, close, p_change, v2ma20, vma20_2_max, turnover, timetomarket')->order("$name$sort")->limit($page->firstRow.','.$page->listRows)->select();
+            ->field('focus_pool.id, focus_pool.code, focus_pool.date, count, latest, man_date, typeId, subTypeId, cost_price, yield_rate, name, industry, p_change, v2ma20, vma20_2_max, turnover, timetomarket')
+            ->order($sort)
+            ->limit($page->firstRow.','.$page->listRows)
+            ->select();
 
+        $typeList = M('focus_type')->order('id')->select();
+
+        $this->assign('type_list', $typeList);
+        $this->assign('today', $this->today);
         $this->assign('list', $list);
         $this->assign('page', $show);
 
@@ -47,6 +49,6 @@ class IndexController extends Controller {
 
         M('focus_pool')->where($map)->delete();
 
-        $this->index();
+        $this->redirect('Index/index');
     }
 }

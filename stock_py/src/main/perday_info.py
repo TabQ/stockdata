@@ -9,7 +9,7 @@ print datetime.datetime.now()
 
 today = str(date.today())
 
-# today = '2016-02-01'
+# today = '2016-07-19'
 
 conn = MySQLdb.connect(host="localhost", user="root", passwd="root", db="stock", charset="utf8")
 cursor = conn.cursor()
