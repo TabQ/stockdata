@@ -141,3 +141,70 @@ CREATE TABLE `trade_cal` (
   KEY `calendarDate` (`calendarDate`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='交易所交易日历';
 
+DROP TABLE IF EXISTS `top_list`;
+CREATE TABLE `top_list` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `date` char(10) NOT NULL DEFAULT '',
+  `code` varchar(10) NOT NULL DEFAULT '',
+  `name` char(30) NOT NULL DEFAULT '',
+  `pchange` double NOT NULL DEFAULT '0' COMMENT '当日涨跌幅',
+  `amount` double NOT NULL DEFAULT '0' COMMENT '龙虎榜成交额(万)',
+  `buy` double NOT NULL DEFAULT '0' COMMENT '买入额（万）',
+  `sell` double NOT NULL DEFAULT '0' COMMENT '卖入额（万）',
+  `bratio` char(10) NOT NULL DEFAULT '' COMMENT '买入占总成交比例',
+  `sratio` char(10) NOT NULL DEFAULT '' COMMENT '卖出占总成交比例',
+  `reason` varchar(255) NOT NULL DEFAULT '' COMMENT '上榜原因',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='每日龙虎榜列表';
+
+DROP TABLE IF EXISTS `cap_tops`;
+CREATE TABLE `cap_tops` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `code` varchar(10) NOT NULL DEFAULT '',
+  `name` char(30) NOT NULL DEFAULT '',
+  `count` smallint(3) unsigned NOT NULL DEFAULT '0' COMMENT '上榜次数',
+  `bamount` double NOT NULL DEFAULT '0' COMMENT '累积购买额（万）',
+  `samount` double NOT NULL DEFAULT '0' COMMENT '累积卖出额（万）',
+  `net` double NOT NULL DEFAULT '0' COMMENT '净额（万）',
+  `bcount` smallint(3) unsigned NOT NULL DEFAULT '0' COMMENT '买入席位数',
+  `scount` smallint(3) unsigned NOT NULL DEFAULT '0' COMMENT '卖出席位数',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='个股上榜统计';
+
+DROP TABLE IF EXISTS `broker_tops`;
+CREATE TABLE `broker_tops` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `broker` varchar(255) NOT NULL DEFAULT '' COMMENT '营业部名称',
+  `count` smallint(3) unsigned NOT NULL DEFAULT '0' COMMENT '上榜次数',
+  `bamount` double NOT NULL DEFAULT '0' COMMENT '累积购买额（万）',
+  `samount` double NOT NULL DEFAULT '0' COMMENT '累积卖出额（万）',
+  `bcount` smallint(3) unsigned NOT NULL DEFAULT '0' COMMENT '买入席位数',
+  `scount` smallint(3) unsigned NOT NULL DEFAULT '0' COMMENT '卖出席位数',
+  `top3` varchar(255) NOT NULL DEFAULT '' COMMENT '买入前三股票',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='营业部上榜统计';
+
+DROP TABLE IF EXISTS `inst_tops`;
+CREATE TABLE `inst_tops` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `code` varchar(10) NOT NULL DEFAULT '',
+  `name` char(30) NOT NULL DEFAULT '',
+  `bamount` double NOT NULL DEFAULT '0' COMMENT '累积购买额（万）',
+  `samount` double NOT NULL DEFAULT '0' COMMENT '累积卖出额（万）',
+  `bcount` smallint(3) unsigned NOT NULL DEFAULT '0' COMMENT '买入次数',
+  `scount` smallint(3) unsigned NOT NULL DEFAULT '0' COMMENT '卖出次数',
+  `net` double NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='机构席位追踪';
+
+DROP TABLE IF EXISTS `inst_detail`;
+CREATE TABLE `inst_detail` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `code` varchar(10) NOT NULL DEFAULT '',
+  `name` char(30) NOT NULL DEFAULT '',
+  `date` char(10) NOT NULL DEFAULT '',
+  `bamount` double NOT NULL DEFAULT '0' COMMENT '机构席位买入额（万）',
+  `samount` double NOT NULL DEFAULT '0' COMMENT '机构席位卖出额（万）',
+  `type` varchar(255) NOT NULL DEFAULT '' COMMENT '类型',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='机构成交明细';

@@ -61,7 +61,15 @@ class MachineController extends Controller {
             $dataList[] = array('action_id' => 13, 'time' => $timeStamp);
         }
 
-        !empty($dataList) && $result = M('action_log')->addAll($dataList);
+        if(!empty($dataList)) {
+            $result = M('action_log')->addAll($dataList);
+        } else {
+            $data['action_id'] = 13;
+            $data['time'] = strtotime($this->today . ' 20:00:00');
+
+            $result = M('action_log')->add($data);
+        }
+
         if($result) {
             $this->ajaxReturn(array('status' => 1, 'msg' => '操作成功！'));
         } else {
