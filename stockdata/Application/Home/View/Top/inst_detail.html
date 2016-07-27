@@ -1,0 +1,44 @@
+<extend name="Public:base" />
+
+<block name="main-page">
+    <div class="main-page">
+        <!--grids-->
+        <div class="grids">
+            <div class="progressbar-heading grids-heading">
+                <h2>龙虎榜数据（{$today}）</h2>
+            </div>
+            <div class="panel panel-widget">
+                <div class="tables">
+                    <h4>机构成交明细</h4>
+                    <table class="table table-hover">
+                        <thead>
+                        <tr>
+                            <th>Code</th>
+                            <th>Name</th>
+                            <th>Bamount</th>
+                            <th>Samount</th>
+                            <th>Type</th>
+                            <th>Date</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <foreach name="list" item="vo">
+                            <tr>
+                                <td>{$vo.code}</td>
+                                <td>{$vo.name}</td>
+                                <td>{$vo.bamount}</td>
+                                <td>{$vo.samount}</td>
+                                <td>{$vo.type}</td>
+                                <td>{$vo.date}</td>
+                            </tr>
+                        </foreach>
+                        </tbody>
+                    </table>
+                    <div style="float:left;"></div><div class="manu" style="float:right;">{$page}</div><div style="clear: both;"></div>
+                </div>
+            </div>
+        </div>
+        <!--//grids-->
+
+    </div>
+</block>

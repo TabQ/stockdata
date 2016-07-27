@@ -31,6 +31,7 @@ INSERT INTO `focus_type` VALUES(7, '下降波段');
 INSERT INTO `focus_type` VALUES(8, '成交量突破回踩开始');
 INSERT INTO `focus_type` VALUES(9, '成交量突破回踩结束');
 INSERT INTO `focus_type` VALUES(10, '密切关注，随时建仓');
+INSERT INTO `focus_type` VALUES(11, '卖出后观察');
 
 DROP TABLE IF EXISTS `action_type`;
 CREATE TABLE `action_type` (

@@ -71,7 +71,25 @@
                         <a href="charts.html" class="chart-nav"><i class="fa fa-bar-chart nav_icon"></i>Charts</a>
                     </li>
                     <li>
-                        <a href="{:U('Top/index')}" class="chart-nav"><i class="fa fa-bar-chart nav_icon"></i>龙虎榜数据</a>
+                        <a href="#" class="chart-nav"><i class="fa fa-bar-chart nav_icon"></i>龙虎榜数据<span class="fa arrow"></span></a>
+                        <ul class="nav nav-second-level collapse">
+                            <li>
+                                <a href="{:U('Top/top_list')}">每日龙虎榜列表</a>
+                            </li>
+                            <li>
+                                <a href="{:U('Top/cap_tops')}">个股上榜统计</a>
+                            </li>
+                            <li>
+                                <a href="{:U('Top/broker_tops')}">营业部上榜统计</a>
+                            </li>
+                            <li>
+                                <a href="{:U('Top/inst_tops')}">机构席位追踪</a>
+                            </li>
+                            <li>
+                                <a href="{:U('Top/inst_detail')}">机构成交明细</a>
+                            </li>
+                        </ul>
+                        <!-- //nav-second-level -->
                     </li>
                 </ul>
             </div>
