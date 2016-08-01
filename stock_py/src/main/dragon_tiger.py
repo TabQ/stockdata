@@ -35,7 +35,7 @@ if dateRes:
         f=open("errors/"+today+".log",'a')
         traceback.print_exc(file=f)
         f.flush()
-        f.close()            
+        f.close()
         
     # 个股上榜统计            
     try:

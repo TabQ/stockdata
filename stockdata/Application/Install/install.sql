@@ -127,6 +127,36 @@ CREATE TABLE `perday_info` (
   UNIQUE KEY code_date (`code`, `date`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
+DROP TABLE IF EXISTS `h_data`;
+CREATE TABLE `h_data` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `code` varchar(10) NOT NULL DEFAULT '',
+  `date` char(10) NOT NULL DEFAULT '',
+  `open` double NOT NULL DEFAULT '0',
+  `high` double NOT NULL DEFAULT '0',
+  `close` double NOT NULL DEFAULT '0',
+  `low` double NOT NULL DEFAULT '0',
+  `volume` double NOT NULL DEFAULT '0',
+  `amount` double NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY code_date (`code`, `date`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `super_wave`;
+CREATE TABLE `super_wave` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `code` varchar(10) NOT NULL DEFAULT '',
+  `date` char(10) NOT NULL DEFAULT '',
+  `min` double NOT NULL DEFAULT '0',
+  `max` double NOT NULL DEFAULT '0',
+  `percent` double NOT NULL DEFAULT '0' COMMENT '超涨/超跌的百分比',
+  `cur_per` double NOT NULL DEFAULT '0' COMMENT '当前超涨/超跌的百分比',
+  `direction` tinyint(1) NOT NULL DEFAULT '1' COMMENT '超涨超跌标识',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY code (`code`),
+  KEY dir_curper (`direction`, `cur_per`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='寻找超涨/超跌';
+
 DROP TABLE IF EXISTS `trade_cal`;
 CREATE TABLE `trade_cal` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
