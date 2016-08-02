@@ -1,0 +1,66 @@
+<extend name="Public:base" />
+
+<block name="main-page">
+    <div class="main-page">
+        <!--grids-->
+        <div class="grids">
+            <div class="progressbar-heading grids-heading">
+                <h2>超跌超涨（{$today}）</h2>
+            </div>
+            <div class="panel panel-widget">
+                <div class="tables">
+                    <h4>准超跌</h4>
+                    <table class="table table-bordered">
+                        <thead>
+                        <tr>
+                            <th>Choose</th>
+                            <th style="cursor:pointer;color:#67D3E0;"><span>Id&nbsp;</span><span><if condition="$Think.const.ACTION_NAME eq 'Id'"><if condition="$Think.get.desc eq 1">↓<else />↑</if></if></span></th>
+                            <th style="cursor:pointer;color:#67D3E0;"><span>Code&nbsp;</span><span><if condition="$Think.const.ACTION_NAME eq 'Code'"><if condition="$Think.get.desc eq 1">↓<else />↑</if></if></span></th>
+                            <th style="cursor:pointer;color:#67D3E0;"><span>Date&nbsp;</span><span><if condition="$Think.const.ACTION_NAME eq 'index'">↑<elseif condition="$Think.const.ACTION_NAME eq 'Date'"/><if condition="$Think.get.desc eq 1">↓<else />↑</if></if></span></th>
+                            <th>Name</th>
+                            <th>Industry</th>
+                            <th>Min</th>
+                            <th>Max</th>
+                            <th>Percent</th>
+                            <th>Cur_per&nbsp;↑</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <foreach name="list" item="vo">
+                            <tr>
+                                <td><label><input name="choose" type="checkbox" value="{$vo.id}" />&nbsp;&nbsp;标记</label></td>
+                                <td>{$vo.id}</td>
+                                <td><a href="{:U('Detail/index',array('code'=>$vo['code']))}">{$vo.code}</a></td>
+                                <td>{$vo.date}</td>
+                                <td><a href="{:U('Detail/index',array('code'=>$vo['code']))}">{$vo.name}</a></td>
+                                <td>{$vo.industry}</td>
+                                <td>{$vo.min}</td>
+                                <th>{$vo.max}</th>
+                                <th>{$vo.percent|round=###,2}</th>
+                                <th>{$vo.cur_per|round=###,2}</th>
+                            </tr>
+                        </foreach>
+                        </tbody>
+                    </table>
+                    <div style="float:left;"></div><div class="manu" style="float:right;">{$page}</div><div style="clear: both;"></div>
+                    <script type="text/javascript">
+                        $(function() {
+                            $('.tables th[style]').click(function() {
+                                var sort = $(this).children(':eq(1)').text();
+                                var column = $.trim($(this).children(':eq(0)').text());
+
+                                if(sort == '' || sort == '↑') {
+                                    window.location.href = "{:U('Super/"+column+"?desc=1')}";
+                                } else {
+                                    window.location.href = "{:U('Super/"+column+"?desc=0')}";
+                                }
+                            });
+                        });
+                    </script>
+                </div>
+            </div>
+        </div>
+        <!--//grids-->
+
+    </div>
+</block>

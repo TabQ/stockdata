@@ -10,13 +10,19 @@
                         <a href="{:U('Machine/index')}" <if condition="$Think.const.MODULE_NAME eq 'Home' and $Think.const.CONTROLLER_NAME eq 'Machine'">class="active"</if>><i class="fa fa-cogs nav_icon"></i>关注池待处理</a>
                     </li>
                     <li>
-                        <a href="#"><i class="fa fa-book nav_icon"></i>Elements <span class="fa arrow"></span></a>
+                        <a href="#"><i class="fa fa-book nav_icon"></i>超跌超涨<span class="fa arrow"></span></a>
                         <ul class="nav nav-second-level collapse">
                             <li>
-                                <a href="buttons.html">Buttons</a>
+                                <a href="{:U('Super/super_down')}">超跌</a>
                             </li>
                             <li>
-                                <a href="typography.html">Typography</a>
+                                <a href="{:U('Super/down')}">准超跌</a>
+                            </li>
+                            <li>
+                                <a href="{:U('Super/super_up')}">超涨</a>
+                            </li>
+                            <li>
+                                <a href="{:U('Super/up')}">准超涨</a>
                             </li>
                         </ul>
                         <!-- /nav-second-level -->
