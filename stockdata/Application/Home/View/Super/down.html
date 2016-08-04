@@ -16,7 +16,6 @@
                             <th>Choose</th>
                             <th style="cursor:pointer;color:#67D3E0;"><span>Id&nbsp;</span><span><if condition="$Think.const.ACTION_NAME eq 'Id'"><if condition="$Think.get.desc eq 1">↓<else />↑</if></if></span></th>
                             <th style="cursor:pointer;color:#67D3E0;"><span>Code&nbsp;</span><span><if condition="$Think.const.ACTION_NAME eq 'Code'"><if condition="$Think.get.desc eq 1">↓<else />↑</if></if></span></th>
-                            <th style="cursor:pointer;color:#67D3E0;"><span>Date&nbsp;</span><span><if condition="$Think.const.ACTION_NAME eq 'index'">↑<elseif condition="$Think.const.ACTION_NAME eq 'Date'"/><if condition="$Think.get.desc eq 1">↓<else />↑</if></if></span></th>
                             <th>Name</th>
                             <th>Industry</th>
                             <th>Min</th>
@@ -31,7 +30,6 @@
                                 <td><label><input name="choose" type="checkbox" value="{$vo.id}" />&nbsp;&nbsp;标记</label></td>
                                 <td>{$vo.id}</td>
                                 <td><a href="{:U('Detail/index',array('code'=>$vo['code']))}">{$vo.code}</a></td>
-                                <td>{$vo.date}</td>
                                 <td><a href="{:U('Detail/index',array('code'=>$vo['code']))}">{$vo.name}</a></td>
                                 <td>{$vo.industry}</td>
                                 <td>{$vo.min}</td>
