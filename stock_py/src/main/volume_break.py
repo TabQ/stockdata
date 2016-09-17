@@ -72,7 +72,7 @@ if dateRes:
         cursor.execute(sql, param)
         conn.commit()
         
-    # perday_info入库开始־
+    # perday_info入库结束־
     now = time.time()
     sql = "insert into action_log(action_id, time) values(%s, %s)"
     param = (12, now)
