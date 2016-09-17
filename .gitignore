@@ -6,3 +6,4 @@ stockdata/Application/Runtime/
 stock_py/src/main/errors/
 stock_py/src/main/tk.csv
 *.log
+*.pyc
