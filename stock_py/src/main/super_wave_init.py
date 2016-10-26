@@ -7,7 +7,7 @@ import time
 
 def diff_between_two_days(day1, day2):
     if day1 == '0' or day2 == '0':
-        return 0;
+        return 0
     
     second1 = datetime.datetime.strptime(day1, "%Y-%m-%d")
     second1 = time.mktime(second1.timetuple())
@@ -24,7 +24,9 @@ def diff_between_two_days(day1, day2):
 
 print datetime.datetime.now()
 
-today = '2016-06-30'
+today = str(date.today())
+
+# today = '2016-10-24'
 
 conn = MySQLdb.connect(host="localhost", user="root", passwd="root", db="stock", charset="utf8")
 cursor = conn.cursor()
@@ -46,8 +48,15 @@ if dateRes:
         if diff_between_two_days(today, timeToMarket) < 3*30:
             continue
         
-        sql = "insert into super_wave(code,date,min,max) values(%s,%s,%s,%s)"
-        param = (code, today, close, close)
+        sql = "select code from super_wave where code='"+code+"'"
+        cursor.execute(sql)
+        swResult = cursor.fetchone()
+    
+        if swResult:
+            continue
+        
+        sql = "insert into super_wave(code,cost_date,min,max,cost_price) values(%s,%s,%s,%s,%s)"
+        param = (code, today, close, close, close)
         cursor.execute(sql, param)
         conn.commit()
         
