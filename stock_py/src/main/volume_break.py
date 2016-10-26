@@ -27,7 +27,7 @@ print datetime.datetime.now()
 
 today = str(date.today())
 
-# today = '2016-07-19'
+# today = '2016-10-24'
 
 conn = MySQLdb.connect(host="localhost", user="root", passwd="root", db="stock", charset="utf8")
 cursor = conn.cursor()
@@ -44,7 +44,7 @@ if dateRes:
     cursor.execute(sql, param)
     conn.commit()
     
-    sql = "select p.code, open, high, close, low, timeToMarket from perday_info as p, stocks_info as s where p.code = s.code and v2ma20 > 2.5 and date='" + today + "' order by v2ma20 desc, vma20_2_max"
+    sql = "select p.code, open, high, close, low, timeToMarket from perday_info as p, stocks_info as s where p.code = s.code and v2ma20 > 2.0 and date='" + today + "' order by v2ma20 desc, vma20_2_max"
     cursor.execute(sql)
     results = cursor.fetchall()
     
