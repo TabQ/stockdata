@@ -15,7 +15,7 @@ sql = "insert into action_log(action_id, time) values(%s, %s)"
 param = (1, now)
 cursor.execute(sql, param)
 conn.commit()
- 
+
 sql = "drop table if exists stocks_info"
 cursor.execute(sql)
 

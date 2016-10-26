@@ -12,7 +12,7 @@ print datetime.datetime.now()
 conn = MySQLdb.connect(host="localhost", user="root", passwd="root", db="stock", charset="utf8")
 cursor = conn.cursor()
 
-sql = "select calendarDate from trade_cal where isOpen=1 and calendarDate >= '2016-08-31' and calendarDate <= '2016-08-31' order by calendarDate"
+sql = "select calendarDate from trade_cal where isOpen=1 and calendarDate >= '2016-09-01' and calendarDate <= '2016-09-03' order by calendarDate"
 cursor.execute(sql)
 dateRes = cursor.fetchall()
 
