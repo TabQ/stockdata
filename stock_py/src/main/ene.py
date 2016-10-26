@@ -37,6 +37,8 @@ print datetime.datetime.now()
 
 today = str(date.today())
 
+# today = '2016-10-24'
+
 conn = MySQLdb.connect(host="localhost", user="root", passwd="root", db="stock", charset="utf8")
 cursor = conn.cursor()
 
@@ -52,15 +54,17 @@ if dateRes:
     cursor.execute(sql, param)
     conn.commit()
     
-    sql = "select p.code, close, ma10, timeToMarket from perday_info as p, stocks_info as s where p.code = s.code and date='" + today + "'"
+    sql = "select p.code, high, close, low, ma10, timeToMarket from perday_info as p, stocks_info as s where p.code = s.code and date='" + today + "'"
     cursor.execute(sql)
     results = cursor.fetchall()
     
     for row in results:
         code = row[0]
-        close = row[1]
-        ma10 = row[2]
-        timeToMarket = row[3]
+        high = row[1]
+        close = row[2]
+        low = row[3]
+        ma10 = row[4]
+        timeToMarket = row[5]
         
         if diff_between_two_days(today, timeToMarket) < 3*30:
             continue
@@ -69,7 +73,7 @@ if dateRes:
         lower = (1 - M2/100) * ma10
         ene = (upper + lower) /2
         
-        if close >= upper:
+        if high >= upper:
             sql = "select id from focus_pool where code='" + code + "' and typeId=13 and subTypeId=1"
             cursor.execute(sql)
             upper_res = cursor.fetchone()
@@ -83,7 +87,7 @@ if dateRes:
             cursor.execute(sql, param)
             conn.commit()
             
-        if close <= lower:
+        if low <= lower:
             sql = "select id from focus_pool where code='" + code + "' and typeId=14 and subTypeId=1"
             cursor.execute(sql)
             lower_res = cursor.fetchone()
