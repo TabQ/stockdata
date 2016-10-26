@@ -14,11 +14,11 @@
                         <thead>
                         <tr>
                             <th>Choose</th>
-                            <th style="cursor:pointer;color:#67D3E0;"><span>Id&nbsp;</span><span><if condition="$Think.const.ACTION_NAME eq 'Id'"><if condition="$Think.get.desc eq 1">↓<else />↑</if></if></span></th>
-                            <th style="cursor:pointer;color:#67D3E0;"><span>Code&nbsp;</span><span><if condition="$Think.const.ACTION_NAME eq 'Code'"><if condition="$Think.get.desc eq 1">↓<else />↑</if></if></span></th>
+                            <th>Name</th>
                             <th style="cursor:pointer;color:#67D3E0;"><span>Date&nbsp;</span><span><if condition="$Think.const.ACTION_NAME eq 'index'">↑<elseif condition="$Think.const.ACTION_NAME eq 'Date'"/><if condition="$Think.get.desc eq 1">↓<else />↑</if></if></span></th>
                             <th style="cursor:pointer;color:#67D3E0;"><span>Latest&nbsp;</span><span><if condition="$Think.const.ACTION_NAME eq 'Latest'"><if condition="$Think.get.desc eq 1">↓<else />↑</if></if></span></th>
-                            <th>Name</th>
+                            <th style="cursor:pointer;color:#67D3E0;"><span>Code&nbsp;</span><span><if condition="$Think.const.ACTION_NAME eq 'Code'"><if condition="$Think.get.desc eq 1">↓<else />↑</if></if></span></th>
+                            <th style="cursor:pointer;color:#67D3E0;"><span>Id&nbsp;</span><span><if condition="$Think.const.ACTION_NAME eq 'Id'"><if condition="$Think.get.desc eq 1">↓<else />↑</if></if></span></th>
                             <th>Industry</th>
                             <th>Cost_price</th>
                             <th id="p_change" style="cursor:pointer;color:#67D3E0;"><span>P_change&nbsp;</span><span><if condition="$Think.const.ACTION_NAME eq 'P_change'"><if condition="$Think.get.desc eq 1">↓<else />↑</if></if></span></th>
@@ -34,11 +34,11 @@
                         <foreach name="list" item="vo">
                             <tr>
                                 <td><label><input name="choose" type="checkbox" value="{$vo.id}" />&nbsp;&nbsp;删除</label></td>
-                                <td>{$vo.id}</td>
-                                <td><a href="{:U('Detail/index',array('code'=>$vo['code']))}">{$vo.code}</a></td>
+                                <td><a href="{:U('Detail/index',array('code'=>$vo['code']))}">{$vo.name}</a></td>
                                 <td>{$vo.date}</td>
                                 <td>{$vo.latest}</td>
-                                <td><a href="{:U('Detail/index',array('code'=>$vo['code']))}">{$vo.name}</a></td>
+                                <td><a href="{:U('Detail/index',array('code'=>$vo['code']))}">{$vo.code}</a></td>
+                                <td>{$vo.id}</td>
                                 <td>{$vo.industry}</td>
                                 <td>{$vo.cost_price}</td>
                                 <td>{$vo.p_change}</td>
