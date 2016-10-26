@@ -9,7 +9,7 @@ print datetime.datetime.now()
 
 today = str(date.today())
 
-# today = '2016-07-19'
+# today = '2016-10-24'
 
 conn = MySQLdb.connect(host="localhost", user="root", passwd="root", db="stock", charset="utf8")
 cursor = conn.cursor()
@@ -38,7 +38,7 @@ if dateRes:
         pi = cursor.fetchone()
         
         if pi:
-            yield_rate = (pi[0] - fpRow[1]) * 100 / fpRow[1]
+            yield_rate = (pi[0] - fpRow[1]) * 100.00 / fpRow[1]
             sql = "update focus_pool set yield_rate=%s where id=%s"
             param = (yield_rate, fpRow[2])
             cursor.execute(sql, param)
