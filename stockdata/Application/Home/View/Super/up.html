@@ -14,33 +14,43 @@
                         <thead>
                         <tr>
                             <th>Choose</th>
-                            <th style="cursor:pointer;color:#67D3E0;"><span>Id&nbsp;</span><span><if condition="$Think.const.ACTION_NAME eq 'Id'"><if condition="$Think.get.desc eq 1">↓<else />↑</if></if></span></th>
-                            <th style="cursor:pointer;color:#67D3E0;"><span>Code&nbsp;</span><span><if condition="$Think.const.ACTION_NAME eq 'Code'"><if condition="$Think.get.desc eq 1">↓<else />↑</if></if></span></th>
+                            <th>Flag</th>
+                            <th>Man_date</th>
                             <th>Name</th>
+                            <th style="cursor:pointer;color:#67D3E0;"><span>Code&nbsp;</span><span><if condition="$Think.const.ACTION_NAME eq 'Code'"><if condition="$Think.get.desc eq 1">↓<else />↑</if></if></span></th>
+                            <th style="cursor:pointer;color:#67D3E0;"><span>Id&nbsp;</span><span><if condition="$Think.const.ACTION_NAME eq 'Id'"><if condition="$Think.get.desc eq 1">↓<else />↑</if></if></span></th>
+                            <th>Date</th>
                             <th>Industry</th>
                             <th>Min</th>
                             <th>Max</th>
                             <th>Percent</th>
                             <th>Cur_per&nbsp;↓</th>
+                            <th>Cost_price</th>
+                            <th>Yield_rate</th>
                         </tr>
                         </thead>
                         <tbody>
                         <foreach name="list" item="vo">
                             <tr>
                                 <td><label><input name="choose" type="checkbox" value="{$vo.id}" />&nbsp;&nbsp;标记</label></td>
-                                <td>{$vo.id}</td>
+                                <th>{$vo.flag}</th>
+                                <th>{$vo.man_date}</th>
+                                <td><a href="{:U('Detail/index',array('code'=>$vo['code']))}">{$vo.name}</a></td>s
                                 <td><a href="{:U('Detail/index',array('code'=>$vo['code']))}">{$vo.code}</a></td>
-                                <td><a href="{:U('Detail/index',array('code'=>$vo['code']))}">{$vo.name}</a></td>
+                                <td>{$vo.id}</td>
+                                <th>{$vo.date}</th>
                                 <td>{$vo.industry}</td>
                                 <td>{$vo.min}</td>
                                 <th>{$vo.max}</th>
                                 <th>{$vo.percent|round=###,2}</th>
                                 <th>{$vo.cur_per|round=###,2}</th>
+                                <th>{$vo.cost_price}</th>
+                                <th>{$vo.yield_rate|round=###,2}</th>
                             </tr>
                         </foreach>
                         </tbody>
                     </table>
-                    <div style="float:left;"></div><div class="manu" style="float:right;">{$page}</div><div style="clear: both;"></div>
+                    <input id="flag" type="button" value="   标 记   " style="float:left;"/><div class="manu" style="float:right;">{$page}</div><div style="clear: both;"></div>
                     <script type="text/javascript">
                         $(function() {
                             $('.tables th[style]').click(function() {
@@ -51,6 +61,22 @@
                                     window.location.href = "{:U('Super/"+column+"?desc=1')}";
                                 } else {
                                     window.location.href = "{:U('Super/"+column+"?desc=0')}";
+                                }
+                            });
+
+                            $('#flag').click(function() {
+                                var chooseArr = [];
+                                $('input[name=choose]').each(function() {
+                                    if($(this).prop('checked')) {
+                                        chooseArr.push($(this).val());
+                                    }
+                                });
+                                if(chooseArr.length == 0) {
+                                    alert('您还没有做出任何选择！');
+                                    return false;
+                                } else {
+                                    var chooseStr = chooseArr.join(',');
+                                    window.location.href = "{:U('Super/flag')}?ids="+chooseStr;
                                 }
                             });
                         });
