@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import tushare as ts
 import MySQLdb
 from datetime import date
@@ -10,6 +11,7 @@ print datetime.datetime.now()
 conn = MySQLdb.connect(host="localhost", user="root", passwd="root", db="stock", charset="utf8")
 cursor = conn.cursor()
 
+# stocks_info入库开始记入日志
 now = time.time()
 sql = "insert into action_log(action_id, time) values(%s, %s)"
 param = (1, now)
@@ -37,10 +39,6 @@ sql = "CREATE TABLE `stocks_info` (\
   `bvps` double NOT NULL DEFAULT 0,\
   `pb` double NOT NULL DEFAULT 0,\
   `timeToMarket` char(10) NOT NULL DEFAULT '',\
-  `maxVol` double NOT NULL DEFAULT '0',\
-  `maxVolDate` char(10) NOT NULL DEFAULT '',\
-  `minPrice` double NOT NULL DEFAULT '0',\
-  `minPriceDate` char(10) NOT NULL DEFAULT '',\
   PRIMARY KEY (`id`),\
   UNIQUE KEY `code` (`code`)\
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;"
@@ -58,6 +56,7 @@ if df is not None:
         except Exception,e:
             print Exception,":",e
 
+# stocks_info入库结束记入日志־
 now = time.time()
 sql = "insert into action_log(action_id, time) values(%s, %s)"
 param = (2, now)
