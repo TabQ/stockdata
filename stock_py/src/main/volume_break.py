@@ -8,7 +8,7 @@ import sys
 
 def diff_between_two_days(day1, day2):
     if day1 == '0' or day2 == '0':
-        return 0;
+        return 0
     
     second1 = datetime.datetime.strptime(day1, "%Y-%m-%d")
     second1 = time.mktime(second1.timetuple())
@@ -27,7 +27,7 @@ print datetime.datetime.now()
 
 today = str(date.today())
 
-# today = '2016-10-24'
+# today = '2016-11-02'
 
 conn = MySQLdb.connect(host="localhost", user="root", passwd="root", db="stock", charset="utf8")
 cursor = conn.cursor()
