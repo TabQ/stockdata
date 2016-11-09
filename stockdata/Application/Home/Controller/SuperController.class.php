@@ -20,7 +20,7 @@ class SuperController extends Controller {
         $list = M('super_wave')
             ->where("direction=-1")
             ->join('left join stocks_info on super_wave.code = stocks_info.code')
-            ->field('super_wave.id, super_wave.code, date, man_date, name, industry, min, max, percent, cur_per, flag, cost_price, yield_rate')
+            ->field('super_wave.id, super_wave.code, summit_date, cost_date, man_date, name, industry, min, max, percent, cur_per, flag, cost_price, yield_rate')
             ->order('percent')
             ->limit($page->firstRow.','.$page->listRows)
             ->select();
@@ -40,7 +40,7 @@ class SuperController extends Controller {
         $list = M('super_wave')
             ->where("cur_per<-0.2 and direction=1")
             ->join('left join stocks_info on super_wave.code = stocks_info.code')
-            ->field('super_wave.id, super_wave.code, date, man_date, name, industry, min, max, percent, cur_per, flag, cost_price, yield_rate')
+            ->field('super_wave.id, super_wave.code, summit_date, cost_date, man_date, name, industry, min, max, percent, cur_per, flag, cost_price, yield_rate')
             ->order('cur_per')
             ->limit($page->firstRow.','.$page->listRows)
             ->select();
@@ -60,7 +60,7 @@ class SuperController extends Controller {
         $list = M('super_wave')
             ->where("direction=1")
             ->join('left join stocks_info on super_wave.code = stocks_info.code')
-            ->field('super_wave.id, super_wave.code, date, man_date, name, industry, min, max, percent, cur_per, flag, cost_price, yield_rate')
+            ->field('super_wave.id, super_wave.code, summit_date, cost_date, man_date, name, industry, min, max, percent, cur_per, flag, cost_price, yield_rate')
             ->order('percent desc')
             ->limit($page->firstRow.','.$page->listRows)
             ->select();
@@ -80,7 +80,7 @@ class SuperController extends Controller {
         $list = M('super_wave')
             ->where("cur_per>=0.2 and direction=-1")
             ->join('left join stocks_info on super_wave.code = stocks_info.code')
-            ->field('super_wave.id, super_wave.code, date, man_date, name, industry, min, max, percent, cur_per, flag, cost_price, yield_rate')
+            ->field('super_wave.id, super_wave.code, summit_date, cost_date, man_date, name, industry, min, max, percent, cur_per, flag, cost_price, yield_rate')
             ->order('cur_per desc')
             ->limit($page->firstRow.','.$page->listRows)
             ->select();
