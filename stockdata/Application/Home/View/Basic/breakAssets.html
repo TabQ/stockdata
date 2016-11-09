@@ -1,0 +1,49 @@
+<extend name="Public:base" />
+
+<block name="main-page">
+    <div class="main-page">
+        <!--grids-->
+        <div class="grids">
+            <div class="progressbar-heading grids-heading">
+                <h2>低于净资产</h2>
+            </div>
+            <div class="panel panel-widget">
+                <div class="tables">
+                    <table class="table table-bordered">
+                        <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Code</th>
+                            <th>Industry</th>
+                            <th>Low</th>
+                            <th>Bvps</th>
+                            <th>Pe</th>
+                            <th>Profits_yoy&nbsp;↓</th>
+                            <th>Mbrg</th>
+                            <th>TimeToMarket</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <foreach name="list" item="vo">
+                            <tr>
+                                <td><a href="{:U('Detail/index',array('code'=>$vo['code']))}">{$vo.name}</a></td>
+                                <td><a href="{:U('Detail/index',array('code'=>$vo['code']))}">{$vo.code}</a></td>
+                                <td>{$vo.industry}</td>
+                                <td>{$vo.low}</td>
+                                <td>{$vo.bvps}</td>
+                                <td>{$vo.pe}</td>
+                                <td>{$vo.profits_yoy}</td>
+                                <td>{$vo.mbrg}</td>
+                                <td>{$vo.timetomarket}</td>
+                            </tr>
+                        </foreach>
+                        </tbody>
+                    </table>
+                    <div style="float:left;"></div><div class="manu" style="float:right;">{$page}</div><div style="clear: both;"></div>
+                </div>
+            </div>
+        </div>
+        <!--//grids-->
+
+    </div>
+</block>

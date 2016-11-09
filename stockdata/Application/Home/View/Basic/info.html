@@ -1,0 +1,63 @@
+<extend name="Public:base" />
+
+<block name="main-page">
+    <div class="main-page">
+        <!--grids-->
+        <div class="grids">
+            <div class="progressbar-heading grids-heading">
+                <h2>基本信息</h2>
+            </div>
+            <div class="panel panel-widget">
+                <div class="tables">
+                    <table class="table table-bordered">
+                        <thead>
+                        <tr>
+                            <th style="cursor:pointer;color:#67D3E0;"><span>Pe&nbsp;</span><span><if condition="$Think.const.ACTION_NAME eq 'info'">↑<elseif condition="$Think.const.ACTION_NAME eq 'Pe'"/><if condition="$Think.get.desc eq 1">↓<else />↑</if></if></span></th>
+                            <th>Name</th>
+                            <th>Code</th>
+                            <th>Industry</th>
+                            <th>Close</th>
+                            <th style="cursor:pointer;color:#67D3E0;"><span>Bvps&nbsp;</span><span><if condition="$Think.const.ACTION_NAME eq 'Bvps'"><if condition="$Think.get.desc eq 1">↓<else />↑</if></if></span></th>
+                            <th style="cursor:pointer;color:#67D3E0;"><span>Profits_yoy&nbsp;</span><span><if condition="$Think.const.ACTION_NAME eq 'Profits_yoy'"><if condition="$Think.get.desc eq 1">↓<else />↑</if></if></span></th>
+                            <th style="cursor:pointer;color:#67D3E0;"><span>Mbrg&nbsp;</span><span><if condition="$Think.const.ACTION_NAME eq 'Mbrg'"><if condition="$Think.get.desc eq 1">↓<else />↑</if></if></span></th>
+                            <th style="cursor:pointer;color:#67D3E0;"><span>TimeToMarket&nbsp;</span><span><if condition="$Think.const.ACTION_NAME eq 'TimeToMarket'"><if condition="$Think.get.desc eq 1">↓<else />↑</if></if></span></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <foreach name="list" item="vo">
+                            <tr>
+                                <td>{$vo.pe}</td>
+                                <td>{$vo.name}</td>
+                                <td>{$vo.code}</td>
+                                <td>{$vo.industry}</td>
+                                <td>{$vo.close}</td>
+                                <td>{$vo.bvps}</td>
+                                <td>{$vo.profits_yoy}</td>
+                                <td>{$vo.mbrg}</td>
+                                <td>{$vo.timetomarket}</td>
+                            </tr>
+                        </foreach>
+                        </tbody>
+                    </table>
+                    <div style="float:left;"></div><div class="manu" style="float:right;">{$page}</div><div style="clear: both;"></div>
+                    <script type="text/javascript">
+                        $(function() {
+                            $('.tables th[style]').click(function() {
+                                var sort = $(this).children(':eq(1)').text();
+                                var column = $.trim($(this).children(':eq(0)').text());
+
+                                if(sort == '' || sort == '↑') {
+                                    window.location.href = "{:U('Basic/"+column+"?desc=1')}";
+                                } else {
+                                    window.location.href = "{:U('Basic/"+column+"?desc=0')}";
+                                }
+                            });
+                        });
+                    </script>
+                </div>
+            </div>
+        </div>
+        <!--//grids-->
+
+    </div>
+</block>
