@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# ENE公式：N:=10(默认为11，取10方便计算);M1:=10;M2:=9;
+# ENE公式：N:=10;M1:=11;M2:=9;
 # UPPER:(1+M1/100)*MA(CLOSE,N);
 # LOWER:(1-M2/100)*MA(CLOSE,N);
 # ENE:(UPPER+LOWER)/2;
@@ -12,13 +12,13 @@ import datetime
 import time
 import sys
 
-N = 10.00      # 默认为11，取10方便计算均线
-M1 = 10.00
+N = 10.00
+M1 = 11.00
 M2 = 9.00
 
 def diff_between_two_days(day1, day2):
     if day1 == '0' or day2 == '0':
-        return 0;
+        return 0
     
     second1 = datetime.datetime.strptime(day1, "%Y-%m-%d")
     second1 = time.mktime(second1.timetuple())
@@ -37,7 +37,7 @@ print datetime.datetime.now()
 
 today = str(date.today())
 
-# today = '2016-10-24'
+today = '2016-08-25'
 
 conn = MySQLdb.connect(host="localhost", user="root", passwd="root", db="stock", charset="utf8")
 cursor = conn.cursor()
@@ -71,7 +71,7 @@ if dateRes:
         
         upper = (1 + M1/100) * ma10
         lower = (1 - M2/100) * ma10
-        ene = (upper + lower) /2
+        ene = (upper + lower) / 2
         
         if high >= upper:
             sql = "select id from focus_pool where code='" + code + "' and typeId=13 and subTypeId=1"
