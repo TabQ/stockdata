@@ -5,12 +5,13 @@ from datetime import date
 import datetime
 import time
 import traceback
+import sys
 
 print datetime.datetime.now()
 
 today = str(date.today())
 
-# today = '2016-10-24'
+# today = '2016-11-02'
 
 conn = MySQLdb.connect(host="localhost", user="root", passwd="root", db="stock", charset="utf8")
 cursor = conn.cursor()
@@ -21,7 +22,7 @@ dateRes = cursor.fetchone()
 
 if dateRes:
     today = dateRes[0]
-
+    
     # perday_info入库开始־
     now = time.time()
     sql = "insert into action_log(action_id, time) values(%s, %s)"
@@ -29,7 +30,7 @@ if dateRes:
     cursor.execute(sql, param)
     conn.commit()
     
-    sql = "select code, maxVol, minPrice from stocks_info"
+    sql = "select code, maxVol, minPrice from stocks_extends"
     
     cursor.execute(sql)
     results = cursor.fetchall()
