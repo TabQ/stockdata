@@ -68,13 +68,40 @@ CREATE TABLE `stocks_info` (
   `bvps` double NOT NULL DEFAULT '0',
   `pb` double NOT NULL DEFAULT '0',
   `timeToMarket` char(10) NOT NULL DEFAULT '',
-  `maxVol` double NOT NULL DEFAULT '0',
-  `maxVolDate` char(10) NOT NULL DEFAULT '',
-  `minPrice` double NOT NULL DEFAULT '0',
-  `minPriceDate` char(10) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`),
   UNIQUE KEY `code` (`code`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `stocks_report`;
+CREATE TABLE `stocks_report` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `code` varchar(10) NOT NULL DEFAULT '',
+  `eps` double NOT NULL DEFAULT '0' COMMENT '每股收益',
+  `eps_yoy` double NOT NULL DEFAULT '0' COMMENT '每股收益同比(%)',
+  `bvps` double NOT NULL DEFAULT '0' COMMENT '每股净资产',
+  `roe` double NOT NULL DEFAULT '0' COMMENT '净资产收益率(%)',
+  `epcf` double NOT NULL DEFAULT '0' COMMENT '每股现金流量(元)',
+  `net_profits` double NOT NULL DEFAULT '0' COMMENT '净利润(万元)',
+  `profits_yoy` double NOT NULL DEFAULT '0' COMMENT '净利润同比(%)',
+  `distrib` char(30) NOT NULL DEFAULT '' COMMENT '分配方案',
+  `report_date` char(10) NOT NULL DEFAULT '' COMMENT '发布日期',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `code` (`code`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='业绩报告（主表）';
+
+DROP TABLE IF EXISTS `stocks_growth`;
+CREATE TABLE `stocks_growth` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `code` varchar(10) NOT NULL DEFAULT '',
+  `mbrg` double NOT NULL DEFAULT '0' COMMENT '主营业务收入增长率(%)',
+  `nprg` double NOT NULL DEFAULT '0' COMMENT '净利润增长率(%)',
+  `nav` double NOT NULL DEFAULT '0' COMMENT '净资产增长率',
+  `targ` double NOT NULL DEFAULT '0' COMMENT '总资产增长率',
+  `epsg` double NOT NULL DEFAULT '0' COMMENT '每股收益增长率',
+  `seg` double NOT NULL DEFAULT '0' COMMENT '股东权益增长率',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `code` (`code`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='成长能力';
 
 DROP TABLE IF EXISTS `hist_info`;
 CREATE TABLE `hist_info` (
@@ -245,3 +272,43 @@ CREATE TABLE `inst_detail` (
   `type` varchar(255) NOT NULL DEFAULT '' COMMENT '类型',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='机构成交明细';
+
+DROP TABLE IF EXISTS `stocks_concept`;
+CREATE TABLE `stocks_concept` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `code` varchar(10) NOT NULL DEFAULT '',
+  `name` char(30) NOT NULL DEFAULT '',
+  `concept` char(30) NOT NULL DEFAULT '',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='概念分类';
+
+DROP TABLE IF EXISTS `_stocks_extends`;
+CREATE TABLE `_stocks_extends` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `code` varchar(10) NOT NULL DEFAULT '',
+  `maxVol` double NOT NULL DEFAULT '0',
+  `maxVolDate` char(10) NOT NULL DEFAULT '',
+  `minPrice` double NOT NULL DEFAULT '0',
+  `minPriceDate` char(10) NOT NULL DEFAULT '',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `code` (`code`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `stocks_extends`;
+CREATE TABLE `stocks_extends` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `code` varchar(10) NOT NULL DEFAULT '',
+  `date` char(10) NOT NULL DEFAULT '',
+  `ma5` double NOT NULL DEFAULT '0',
+  `ma10` double NOT NULL DEFAULT '0',
+  `ma20` double NOT NULL DEFAULT '0',
+  `ma60` double NOT NULL DEFAULT '0',
+  `ma120` double NOT NULL DEFAULT '0',
+  `ma250` double NOT NULL DEFAULT '0',
+  `v_ma5` double NOT NULL DEFAULT '0',
+  `v_ma10` double NOT NULL DEFAULT '0',
+  `v_ma20` double NOT NULL DEFAULT '0',
+  `turnover` double NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY code_date (`code`, `date`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
