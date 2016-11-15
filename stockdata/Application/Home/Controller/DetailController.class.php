@@ -10,10 +10,10 @@ class DetailController extends Controller {
 
             $data['code'] = $code;
 
-            !empty($typeId) && $data['typeId'] = $typeId;
+            !empty($type_id) && $data['type_id'] = $type_id;
             !empty($cost_price) && $data['cost_price'] = $cost_price;
             !empty($date) && $data['date'] = $date;
-            $data['subTypeId'] = 2;     // 手选
+            $data['subtype_id'] = 2;     // 手选
             $data['man_date'] = C('TODAY');     // 手选操作日期
 
             // 删除已存在数据

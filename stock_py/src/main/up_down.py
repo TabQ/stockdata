@@ -4,6 +4,7 @@ import MySQLdb
 from datetime import date
 import datetime
 import time
+import sys
 
 def diff_between_two_days(day1, day2):
     if day1 == '0' or day2 == '0':
@@ -26,8 +27,6 @@ print datetime.datetime.now()
 
 today = str(date.today())
 
-# today = '2016-11-11'
-
 conn = MySQLdb.connect(host="localhost", user="root", passwd="root", db="stock", charset="utf8")
 cursor = conn.cursor()
 
@@ -36,30 +35,46 @@ cursor.execute(sql)
 dateRes = cursor.fetchone()
 
 if dateRes:
-    sql = "select k.code, close, timeToMarket from k_data as k, stocks_info as s where k.code=s.code and date='"+today+"'"
+    # 每日涨跌幅入库开始־
+    now = time.time()
+    sql = "insert into action_log(action_id, time) values(%s, %s)"
+    param = (18, now)
+    cursor.execute(sql, param)
+    conn.commit()
+    
+    sql = "select k.code, close, timeToMarket from k_data as k, stocks_info as s where k.code = s.code and date='" + today + "'"
     cursor.execute(sql)
     results = cursor.fetchall()
     
     for row in results:
         code = row[0]
         close = row[1]
-        timeToMarket = row[2]
+        timetomarket = row[2]
         
-        if diff_between_two_days(today, timeToMarket) < 20:
+        if diff_between_two_days(today, timetomarket) < 30:
             continue
         
-        sql = "select code from super_wave where code='"+code+"'"
-        cursor.execute(sql)
-        swResult = cursor.fetchone()
-    
-        if swResult:
-            continue
-        
-        sql = "insert into super_wave(code,cost_date,min,max,cost_price) values(%s,%s,%s,%s,%s)"
-        param = (code, today, close, close, close)
+        sql = "select close from k_data where code = %s and date < %s order by date desc limit 1"
+        param = (code, today)
         cursor.execute(sql, param)
-        conn.commit()
+        yest_res = cursor.fetchone()
         
+        if yest_res:
+            yest_close = yest_res[0]
+            percent = (close - yest_close) * 100.00 / yest_close
+            if abs(percent) > 2.00:
+                sql = "insert into up_down(code, date, percent) values(%s, %s, %s)"
+                param = (code, today, percent)
+                cursor.execute(sql, param)
+                conn.commit()
+                
+    # 每日涨跌幅入库结束
+    now = time.time()
+    sql = "insert into action_log(action_id, time) values(%s, %s)"
+    param = (19, now)
+    cursor.execute(sql, param)
+    conn.commit()
+    
 cursor.close()
 conn.close()
 

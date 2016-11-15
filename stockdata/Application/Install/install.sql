@@ -6,13 +6,18 @@ CREATE TABLE `focus_pool` (
   `count` smallint(3) unsigned NOT NULL DEFAULT '1',
   `latest` char(10) NOT NULL DEFAULT '',
   `man_date` char(10) NOT NULL DEFAULT '',
-  `typeId` tinyint(2) unsigned NOT NULL DEFAULT '0',
-  `subTypeId` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '子类型：1.自动；2.手动',
+  `type_id` tinyint(2) unsigned NOT NULL DEFAULT '0',
+  `subtype_id` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '子类型：1.自动；2.手动',
   `cost_price` double NOT NULL DEFAULT '0.00' COMMENT '成本价',
   `yield_rate` double NOT NULL DEFAULT '0.00' COMMENT '收益率',
+  `rec3minus` double NOT NULL DEFAULT '0.00' COMMENT '最近3天收益率上升最快',
+  `rec5minus` double NOT NULL DEFAULT '0.00' COMMENT '最近5天收益率上升最快',
+  `rec3tops` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '最近3天收益率排top10数目',
+  `rec5tops` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '最近5天收益率排top10数目',
+  `rec3topsdate` char(10) NOT NULL DEFAULT '' COMMENT '记录最近3天收益率排top10数目的日期',
+  `rec5topsdate` char(10) NOT NULL DEFAULT '' COMMENT '记录最近5天收益率排top10数目的日期',
   PRIMARY KEY (`id`),
-  KEY `yield_rate` (`yield_rate`),
-  UNIQUE KEY `code_type_subtype` (`code`, `typeId`, `subTypeId`)
+  UNIQUE KEY `code_type_subtype` (`code`, `type_id`, `subtype_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `focus_type`;
@@ -21,18 +26,22 @@ CREATE TABLE `focus_type` (
   `name` varchar(30) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='关注类型';
-INSERT INTO `focus_type` VALUES(1, '成交量突破');
-INSERT INTO `focus_type` VALUES(2, '上升波段');
-INSERT INTO `focus_type` VALUES(3, '横盘整理');
-INSERT INTO `focus_type` VALUES(4, '看涨');
-INSERT INTO `focus_type` VALUES(5, '看跌');
-INSERT INTO `focus_type` VALUES(6, '出贷');
-INSERT INTO `focus_type` VALUES(7, '下降波段');
-INSERT INTO `focus_type` VALUES(8, '成交量突破回踩开始');
-INSERT INTO `focus_type` VALUES(9, '成交量突破回踩结束');
-INSERT INTO `focus_type` VALUES(10, '密切关注，随时建仓');
-INSERT INTO `focus_type` VALUES(11, '卖出后观察');
-INSERT INTO `focus_type` VALUES(12, '超跌待涨');
+INSERT INTO `focus_type` VALUES(1, '近期关注');
+INSERT INTO `focus_type` VALUES(2, '成交量突破');
+INSERT INTO `focus_type` VALUES(3, 'ene打上轨');
+INSERT INTO `focus_type` VALUES(4, 'ene打下轨');
+INSERT INTO `focus_type` VALUES(5, 'ene接近下轨');
+
+DROP TABLE IF EXISTS `volume_break`;
+CREATE TABLE `volume_break`(
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `code` varchar(10) NOT NULL DEFAULT '',
+  `date` char(10) NOT NULL DEFAULT '',
+  `v2ma5` double NOT NULL DEFAULT '0',
+  `v2ma20` double NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY code_date (`code`, `date`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `action_type`;
 CREATE TABLE `action_type` (
@@ -155,19 +164,17 @@ CREATE TABLE `perday_info` (
   UNIQUE KEY code_date (`code`, `date`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-DROP TABLE IF EXISTS `h_data`;
-CREATE TABLE `h_data` (
+CREATE TABLE `k_data` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `code` varchar(10) NOT NULL DEFAULT '',
   `date` char(10) NOT NULL DEFAULT '',
   `open` double NOT NULL DEFAULT '0',
   `high` double NOT NULL DEFAULT '0',
-  `close` double NOT NULL DEFAULT '0',
   `low` double NOT NULL DEFAULT '0',
+  `close` double NOT NULL DEFAULT '0',
   `volume` double NOT NULL DEFAULT '0',
-  `amount` double NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
-  UNIQUE KEY code_date (`code`, `date`)
+  UNIQUE KEY `code_date` (`code`,`date`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `super_wave`;
@@ -176,15 +183,15 @@ CREATE TABLE `super_wave` (
   `code` varchar(10) NOT NULL DEFAULT '',
   `summit_date` char(10) NOT NULL DEFAULT '' COMMENT '当前波峰/波谷日期',
   `cost_date` char(10) NOT NULL DEFAULT '' COMMENT '开始计算成本日期',
-  `man_date` char(10) NOT NULL DEFAULT '' COMMENT '标识除权时的日期',
+  `man_date` char(10) NOT NULL DEFAULT '' COMMENT '标识日期',
   `min` double NOT NULL DEFAULT '0',
   `max` double NOT NULL DEFAULT '0',
   `cost_price` double NOT NULL DEFAULT '0.00' COMMENT '成本价',
   `yield_rate` double NOT NULL DEFAULT '0.00' COMMENT '收益率',
-  `flag` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '是否除权标识',
+  `flag` tinyint(1) unsigned NOT NULL DEFAULT 0 COMMENT '标识',
   `percent` double NOT NULL DEFAULT '0' COMMENT '超涨/超跌的百分比',
   `cur_per` double NOT NULL DEFAULT '0' COMMENT '当前超涨/超跌的百分比',
-  `direction` tinyint(1) NOT NULL DEFAULT '1' COMMENT '超涨超跌标识',
+  `direction` tinyint(1) NOT NULL DEFAULT '1' COMMENT '超涨超跌标识(1超涨/-1超跌)',
   PRIMARY KEY (`id`),
   UNIQUE KEY code (`code`),
   KEY dir_curper (`direction`, `cur_per`)
@@ -282,18 +289,6 @@ CREATE TABLE `stocks_concept` (
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='概念分类';
 
-DROP TABLE IF EXISTS `_stocks_extends`;
-CREATE TABLE `_stocks_extends` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `code` varchar(10) NOT NULL DEFAULT '',
-  `maxVol` double NOT NULL DEFAULT '0',
-  `maxVolDate` char(10) NOT NULL DEFAULT '',
-  `minPrice` double NOT NULL DEFAULT '0',
-  `minPriceDate` char(10) NOT NULL DEFAULT '',
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `code` (`code`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-
 DROP TABLE IF EXISTS `stocks_extends`;
 CREATE TABLE `stocks_extends` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -312,3 +307,23 @@ CREATE TABLE `stocks_extends` (
   PRIMARY KEY (`id`),
   UNIQUE KEY code_date (`code`, `date`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `close_ene_lower`;
+CREATE TABLE `close_ene_lower` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `code` varchar(10) NOT NULL DEFAULT '',
+  `date` char(10) NOT NULL DEFAULT '',
+  `dist_per` double NOT NULL DEFAULT '0' COMMENT '最低价到ene下轨的距离相当于轨道间距的百分比',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY code_date (`code`, `date`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='接近ENE下轨';
+
+DROP TABLE IF EXISTS `up_down`;
+CREATE TABLE `up_down` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `code` varchar(10) NOT NULL DEFAULT '',
+  `date` char(10) NOT NULL DEFAULT '',
+  `percent` double NOT NULL DEFAULT '0' COMMENT '每个交易日涨跌幅度',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY code_date (`code`, `date`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='接近ENE下轨';

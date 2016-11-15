@@ -9,7 +9,7 @@ print datetime.datetime.now()
 
 today = str(date.today())
 
-# today = '2016-10-24'
+# today = '2016-11-11'
 
 conn = MySQLdb.connect(host="localhost", user="root", passwd="root", db="stock", charset="utf8")
 cursor = conn.cursor()
@@ -31,7 +31,7 @@ if dateRes:
         cost_price = row[4]
         summit_date= row[5]
         
-        sql = "select close from perday_info where code=%s and date=%s"
+        sql = "select close from k_data where code=%s and date=%s"
         param = (code, today)
         cursor.execute(sql, param)
         todayRes = cursor.fetchone()
@@ -45,9 +45,8 @@ if dateRes:
                 if close >= _max:
                     percent = (close - _min) / _min
                     yield_rate = (close - cost_price) / cost_price
-                    _max = close
                     sql = "update super_wave set percent=%s, max=%s, summit_date=%s, yield_rate=%s, cur_per=0 where code=%s"
-                    param = (percent, _max, today, yield_rate, code)
+                    param = (percent, close, today, yield_rate, code)
                     
                     cursor.execute(sql, param)
                     conn.commit()
@@ -55,10 +54,9 @@ if dateRes:
                     percent = (close - _max) / _max
                     # 判断是否发生超跌
                     if -percent >= 0.3:
-                        _min = close
                         yield_rate = (close - _max) /_max
                         sql = "update super_wave set min=%s, percent=%s, summit_date=%s, cost_date=%s, cost_price=%s, yield_rate=%s, cur_per=0, direction=-1 where code=%s"
-                        param = (_min, percent, today, summit_date, _max, yield_rate, code)
+                        param = (close, percent, today, summit_date, _max, yield_rate, code)
                         
                         cursor.execute(sql, param)
                         conn.commit()
@@ -74,9 +72,8 @@ if dateRes:
                 if close <= _min:
                     percent = (close - _max) / _max
                     yield_rate = (close - cost_price) / cost_price
-                    _min = close
                     sql = "update super_wave set summit_date=%s, min=%s, percent=%s, yield_rate=%s, cur_per=0 where code=%s"
-                    param = (today, _min, percent, yield_rate, code)
+                    param = (today, close, percent, yield_rate, code)
                     
                     cursor.execute(sql, param)
                     conn.commit()
@@ -84,10 +81,9 @@ if dateRes:
                     percent = (close - _min) / _min
                     # 判断是否发生超涨
                     if percent >= 0.3:
-                        _max = close
                         yield_rate = (close - _min) / _min
                         sql = "update super_wave set max=%s, percent=%s, summit_date=%s, cost_date=%s, cost_price=%s, yield_rate=%s, cur_per=0, direction=1 where code=%s"
-                        param = (_max, percent, today, summit_date, _min, yield_rate, code)
+                        param = (close, percent, today, summit_date, _min, yield_rate, code)
                         
                         cursor.execute(sql, param)
                         conn.commit()

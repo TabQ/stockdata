@@ -15,9 +15,8 @@ class IndexController extends Controller {
         $params = I('get.');
         extract($params);
 
-        $map['focus_pool.date'] = array('elt', $this->today);
-        !empty($typeid) && $map['typeId'] = $typeid;
-        !empty($subtypeid) && $map['subTypeId'] = $subtypeid;
+        !empty($type_id) && $map['type_id'] = $type_id;
+        !empty($subtype_id) && $map['subtype_id'] = $subtype_id;
 
         $count = M('focus_pool')->where($map)->count();
         $page = new \Think\Page($count, PAGE_COUNT);
@@ -27,9 +26,9 @@ class IndexController extends Controller {
 
         $list = M('focus_pool')
             ->where($map)
+            ->join('left join focus_type on focus_pool.type_id = focus_type.id')
             ->join('left join stocks_info on focus_pool.code = stocks_info.code')
-            ->join('left join perday_info on focus_pool.code = perday_info.code and focus_pool.date = perday_info.date')
-            ->field('focus_pool.id, focus_pool.code, focus_pool.date, count, latest, man_date, typeId, subTypeId, cost_price, yield_rate, name, industry, p_change, v2ma20, vma20_2_max, turnover, timetomarket')
+            ->field('focus_pool.id, focus_pool.code, focus_pool.date, count, latest, industry, focus_pool.man_date, focus_type.name as fname, subtype_id, focus_pool.cost_price, focus_pool.yield_rate, stocks_info.name, rec3minus, rec5minus, rec3tops, rec5tops, timetomarket')
             ->order($sort)
             ->limit($page->firstRow.','.$page->listRows)
             ->select();

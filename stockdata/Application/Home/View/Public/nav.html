@@ -10,6 +10,15 @@
                         <a href="{:U('Machine/index')}" <if condition="$Think.const.MODULE_NAME eq 'Home' and $Think.const.CONTROLLER_NAME eq 'Machine'">class="active"</if>><i class="fa fa-cogs nav_icon"></i>关注池待处理</a>
                     </li>
                     <li>
+                        <a href="#"><i class="fa fa-check-square-o nav_icon"></i>计算模型<span class="fa arrow"></span></a>
+                        <ul class="nav nav-second-level collapse">
+                            <li><a href="{:U('Model/volumeBreak')}">成交量突破</a></li>
+                            <li><a href="{:U('Model/eneLower')}">ene打下轨</a></li>
+                            <li><a href="{:U('Model/closeEneLower')}">ene接近下轨</a></li>
+                        </ul>
+                        <!-- //nav-second-level -->
+                    </li>
+                    <li>
                         <a href="#"><i class="fa fa-book nav_icon"></i>超跌超涨<span class="fa arrow"></span></a>
                         <ul class="nav nav-second-level collapse">
                             <li><a href="{:U('Super/super_down')}">超跌</a></li>
@@ -26,27 +35,14 @@
                             <li><a href="{:U('Basic/breakAssets')}">跌破净资产</a></li>
                         </ul>
                     </li>
-
                     <li>
-                        <a href="#"><i class="fa fa-check-square-o nav_icon"></i>Forms<span class="fa arrow"></span></a>
+                        <a href="#"><i class="fa fa-envelope nav_icon"></i>每日涨跌排名<span class="fa arrow"></span></a>
                         <ul class="nav nav-second-level collapse">
                             <li>
-                                <a href="inputs.html">Inputs</a>
+                                <a href="{:U('Perday/up')}">涨幅</a>
                             </li>
                             <li>
-                                <a href="validation.html">Form Validation</a>
-                            </li>
-                        </ul>
-                        <!-- //nav-second-level -->
-                    </li>
-                    <li>
-                        <a href="#"><i class="fa fa-envelope nav_icon"></i>Mailbox<span class="fa arrow"></span></a>
-                        <ul class="nav nav-second-level collapse">
-                            <li>
-                                <a href="inbox.html">Inbox</a>
-                            </li>
-                            <li>
-                                <a href="compose.html">Compose email</a>
+                                <a href="{:U('Perday/down')}">跌幅</a>
                             </li>
                         </ul>
                         <!-- //nav-second-level -->

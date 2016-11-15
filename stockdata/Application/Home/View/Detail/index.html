@@ -18,7 +18,7 @@
                             <div class="form-group">
                                 <label class="col-sm-2 control-label">类型</label>
                                 <div class="col-sm-8">
-                                    <select name="typeId" id="typeId" class="form-control1">
+                                    <select name="type_id" id="type_id" class="form-control1">
                                         <option value="0">请选择：</option>
                                         <foreach name="list" item="vo">
                                             <option value="{$vo.id}">{$vo.name}</option>
@@ -46,16 +46,16 @@
                         $(document).ready(function()
                         {
                             $('#confirm').click(function(e) {
-                                var typeId = $('#typeId').val();
+                                var type_id = $('#type_id').val();
                                 var cost_price = $('#cost_price').val();
                                 var date = $('#date').val();
-                                if(typeId == 0 || cost_price == '' || date == '') {
+                                if(type_id == 0 || cost_price == '' || date == '') {
                                     alert('所有域都不能为空！');
                                     return false;
                                 }
 
                                 $.post("{:U('Detail/index',array('code'=>$info['code']))}", {
-                                    typeId: typeId,
+                                    type_id: type_id,
                                     cost_price: cost_price,
                                     date: date
                                 }, function(data, textStatus) {
