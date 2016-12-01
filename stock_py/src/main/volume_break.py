@@ -27,7 +27,7 @@ print datetime.datetime.now()
 
 today = str(date.today())
 
-# today = '2016-11-11'
+# today = '2016-11-29'
 
 conn = MySQLdb.connect(host="localhost", user="root", passwd="root", db="stock", charset="utf8")
 cursor = conn.cursor()
@@ -86,10 +86,29 @@ if dateRes:
                 cursor.execute(sql, param)
                 conn.commit()
                 
-                sql = "insert into volume_break(code,date,v2ma5,v2ma20) values(%s,%s,%s,%s)"
-                param = (code, today, v2ma5, v2ma20)
+            sql = "insert into volume_break(code,date,v2ma5) values(%s,%s,%s)"
+            param = (code, today, v2ma5)
+            cursor.execute(sql, param)
+            conn.commit()
+        elif v2ma20 >= 2.0:
+            sql = "select id from focus_pool where code='" + code + "' and type_id=6 and subtype_id=1"
+            cursor.execute(sql)
+            fp_res = cursor.fetchone()
+            if fp_res:
+                sql = "update focus_pool set count=count+1, latest=%s where id=%s"
+                param = (today, fp_res[0])
                 cursor.execute(sql, param)
                 conn.commit()
+            else:
+                sql = "insert into focus_pool(code,date,type_id,subtype_id,cost_price) values(%s,%s,%s,%s,%s)"
+                param = (code, today, 6, 1, close)
+                cursor.execute(sql, param)
+                conn.commit()
+                
+            sql = "insert into volume_break(code,date,v2ma20) values(%s,%s,%s)"
+            param = (code, today, v2ma20)
+            cursor.execute(sql, param)
+            conn.commit()
 
 cursor.close()
 conn.close()
