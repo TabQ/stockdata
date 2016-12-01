@@ -37,7 +37,7 @@ print datetime.datetime.now()
 
 today = str(date.today())
 
-# today = '2016-11-11'
+# today = '2016-11-29'
 
 conn = MySQLdb.connect(host="localhost", user="root", passwd="root", db="stock", charset="utf8")
 cursor = conn.cursor()
@@ -113,7 +113,7 @@ if dateRes:
             cursor.execute(sql, param)
             conn.commit()
         else:   # ene最接近下轨top50
-            dist_per = (low - lower) / (upper - lower)
+            dist_per = (low - lower) * 1.00 / (upper - lower) * 1.00
             code_dist = (code, dist_per, close)
             
             if len(close_lower_list) < 50:
