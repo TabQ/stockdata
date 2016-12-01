@@ -27,10 +27,11 @@ CREATE TABLE `focus_type` (
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='关注类型';
 INSERT INTO `focus_type` VALUES(1, '近期关注');
-INSERT INTO `focus_type` VALUES(2, '成交量突破');
+INSERT INTO `focus_type` VALUES(2, '成交量突破5d');
 INSERT INTO `focus_type` VALUES(3, 'ene打上轨');
 INSERT INTO `focus_type` VALUES(4, 'ene打下轨');
 INSERT INTO `focus_type` VALUES(5, 'ene接近下轨');
+INSERT INTO `focus_type` VALUES(6, '成交量突破20d');
 
 DROP TABLE IF EXISTS `volume_break`;
 CREATE TABLE `volume_break`(
