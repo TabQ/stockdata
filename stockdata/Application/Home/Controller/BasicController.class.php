@@ -68,5 +68,34 @@ class BasicController extends Controller {
 
         $this->display('Basic:breakAssets');
     }
+
+    public function lowMinusAssetRate() {
+        $lastData = M('k_data')->field('date')->order('date desc')->limit(1)->find();
+        $lastDay = $lastData['date'];
+
+        $map['date'] = array('eq', $lastDay);
+
+        $count = M('stocks_info')
+            ->where($map)
+            ->join('k_data on k_data.code = stocks_info.code')
+            ->count();
+        $page = new \Think\Page($count, PAGE_COUNT);
+        $show = $page->show();
+
+        $list = M('stocks_info')
+            ->where($map)
+            ->join('k_data on k_data.code = stocks_info.code')
+            ->join('left join stocks_report on stocks_info.code = stocks_report.code')
+            ->join('left join stocks_growth on stocks_info.code = stocks_growth.code')
+            ->field('name, stocks_info.code, industry, (low-stocks_info.bvps)/stocks_info.bvps as lmar, low, stocks_info.bvps, pe, profits_yoy, mbrg, timetomarket')
+            ->order('lmar')
+            ->limit($page->firstRow.','.$page->listRows)
+            ->select();
+
+        $this->assign('list', $list);
+        $this->assign('page', $show);
+
+        $this->display('Basic:lowMinusAssetRate');
+    }
 }
 
