@@ -20,6 +20,7 @@
                             <th style="cursor:pointer;color:#67D3E0;"><span>Bvps&nbsp;</span><span><if condition="$Think.const.ACTION_NAME eq 'Bvps'"><if condition="$Think.get.desc eq 1">↓<else />↑</if></if></span></th>
                             <th style="cursor:pointer;color:#67D3E0;"><span>Profits_yoy&nbsp;</span><span><if condition="$Think.const.ACTION_NAME eq 'Profits_yoy'"><if condition="$Think.get.desc eq 1">↓<else />↑</if></if></span></th>
                             <th style="cursor:pointer;color:#67D3E0;"><span>Mbrg&nbsp;</span><span><if condition="$Think.const.ACTION_NAME eq 'Mbrg'"><if condition="$Think.get.desc eq 1">↓<else />↑</if></if></span></th>
+                            <th style="cursor:pointer;color:#67D3E0;"><span>Outstanding&nbsp;</span><span><if condition="$Think.const.ACTION_NAME eq 'Outstanding'"><if condition="$Think.get.desc eq 1">↓<else />↑</if></if></span></th>
                             <th style="cursor:pointer;color:#67D3E0;"><span>TimeToMarket&nbsp;</span><span><if condition="$Think.const.ACTION_NAME eq 'TimeToMarket'"><if condition="$Think.get.desc eq 1">↓<else />↑</if></if></span></th>
                         </tr>
                         </thead>
@@ -33,7 +34,8 @@
                                 <td>{$vo.close}</td>
                                 <td>{$vo.bvps}</td>
                                 <td>{$vo.profits_yoy}</td>
-                                <td>{$vo.mbrg}</td>
+                                <td>{$vo.mbrg|round=###,2}</td>
+                                <td>{$vo.outstanding}</td>
                                 <td>{$vo.timetomarket}</td>
                             </tr>
                         </foreach>

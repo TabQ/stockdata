@@ -6,7 +6,7 @@ defined('PAGE_COUNT') or define('PAGE_COUNT', 50);
 
 class BasicController extends Controller {
     public function __call($name, $arguments) {
-        if ($name == 'breakAssets') {
+        if ($name == 'breakAssets' || $name == 'lowMinusAssetRate') {
             exit;
         }
 
@@ -29,7 +29,7 @@ class BasicController extends Controller {
             ->join("left join k_data on stocks_info.code = k_data.code and date='$lastDay'")
             ->join('left join stocks_report on stocks_info.code = stocks_report.code')
             ->join('left join stocks_growth on stocks_info.code = stocks_growth.code')
-            ->field('pe, name, stocks_info.code, industry, close, stocks_info.bvps, profits_yoy, mbrg, timetomarket')
+            ->field('pe, name, stocks_info.code, industry, close, stocks_info.bvps, profits_yoy, mbrg, outstanding, timetomarket')
             ->order($sort)
             ->limit($page->firstRow.','.$page->listRows)
             ->select();
