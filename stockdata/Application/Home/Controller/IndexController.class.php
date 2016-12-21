@@ -17,7 +17,7 @@ class IndexController extends Controller {
 
         // 将ene打上轨转移至计算模型
         $map['type_id'] = array('neq', 3);
-        
+
         !empty($type_id) && $map['type_id'] = $type_id;
         !empty($subtype_id) && $map['subtype_id'] = $subtype_id;
 

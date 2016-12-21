@@ -33,7 +33,7 @@ class ModelController extends Controller {
 
         $list = M('focus_pool')
             ->where($map)
-            ->join('left join k_data on focus_pool.code = k_data.code and (focus_pool.latest = k_data.date or focus_pool.date = k_data.date)')
+            ->join('left join k_data on focus_pool.code = k_data.code and focus_pool.date = k_data.date')
             ->join('left join volume_break on focus_pool.code = volume_break.code and focus_pool.date = volume_break.date')
             ->join('left join super_wave on focus_pool.code = super_wave.code')
             ->join('left join stocks_info on focus_pool.code = stocks_info.code')
@@ -65,7 +65,7 @@ class ModelController extends Controller {
 
         $list = M('focus_pool')
             ->where($map)
-            ->join('left join k_data on focus_pool.code = k_data.code and (focus_pool.latest = k_data.date or focus_pool.date = k_data.date)')
+            ->join('left join k_data on focus_pool.code = k_data.code and focus_pool.date = k_data.date')
             ->join('left join volume_break on focus_pool.code = volume_break.code and focus_pool.date = volume_break.date')
             ->join('left join super_wave on focus_pool.code = super_wave.code')
             ->join('left join stocks_info on focus_pool.code = stocks_info.code')
