@@ -15,11 +15,11 @@ class IndexController extends Controller {
         $params = I('get.');
         extract($params);
 
-        !empty($type_id) && $map['type_id'] = $type_id;
-        !empty($subtype_id) && $map['subtype_id'] = $subtype_id;
-
         // 将ene打上轨转移至计算模型
         $map['type_id'] = array('neq', 3);
+        
+        !empty($type_id) && $map['type_id'] = $type_id;
+        !empty($subtype_id) && $map['subtype_id'] = $subtype_id;
 
         $count = M('focus_pool')->where($map)->count();
         $page = new \Think\Page($count, PAGE_COUNT);
