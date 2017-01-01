@@ -113,29 +113,6 @@ CREATE TABLE `stocks_growth` (
   UNIQUE KEY `code` (`code`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='成长能力';
 
-DROP TABLE IF EXISTS `hist_info`;
-CREATE TABLE `hist_info` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `code` varchar(10) NOT NULL DEFAULT '',
-  `date` char(10) NOT NULL DEFAULT '',
-  `open` double NOT NULL DEFAULT '0',
-  `high` double NOT NULL DEFAULT '0',
-  `close` double NOT NULL DEFAULT '0',
-  `low` double NOT NULL DEFAULT '0',
-  `volume` double NOT NULL DEFAULT '0',
-  `price_change` double NOT NULL DEFAULT '0',
-  `p_change` double NOT NULL DEFAULT '0',
-  `ma5` double NOT NULL DEFAULT '0',
-  `ma10` double NOT NULL DEFAULT '0',
-  `ma20` double NOT NULL DEFAULT '0',
-  `v_ma5` double NOT NULL DEFAULT '0',
-  `v_ma10` double NOT NULL DEFAULT '0',
-  `v_ma20` double NOT NULL DEFAULT '0',
-  `turnover` double NOT NULL DEFAULT '0',
-  PRIMARY KEY (`id`),
-  UNIQUE KEY code_date (`code`, `date`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-
 DROP TABLE IF EXISTS `perday_info`;
 CREATE TABLE `perday_info` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
