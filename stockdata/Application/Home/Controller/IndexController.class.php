@@ -15,19 +15,17 @@ class IndexController extends Controller {
         $params = I('get.');
         extract($params);
 
-        // 将ene打上轨转移至计算模型
-        $map['type_id'] = array('neq', 3);
-
         !empty($type_id) && $map['type_id'] = $type_id;
         !empty($subtype_id) && $map['subtype_id'] = $subtype_id;
 
-        $count = M('focus_pool')->where($map)->count();
+        $count = M('focus_pool')->where($map)->count('distinct code');
         $page = new \Think\Page($count, PAGE_COUNT);
         $show = $page->show();
 
         $sort = $name == 'index' ? 'yield_rate desc' : ($desc == 1 ? "$name desc" : "$name");
 
         $list = M('focus_pool')
+            ->group('code')
             ->where($map)
             ->join('left join focus_type on focus_pool.type_id = focus_type.id')
             ->join('left join stocks_info on focus_pool.code = stocks_info.code')
