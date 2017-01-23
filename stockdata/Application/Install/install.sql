@@ -271,7 +271,7 @@ DROP TABLE IF EXISTS `stocks_extends`;
 CREATE TABLE `stocks_extends` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `code` varchar(10) NOT NULL DEFAULT '',
-  `date` char(10) NOT NULL DEFAULT '',
+  `p_change` double NOT NULL DEFAULT '0' COMMENT '涨跌幅',
   `ma5` double NOT NULL DEFAULT '0',
   `ma10` double NOT NULL DEFAULT '0',
   `ma20` double NOT NULL DEFAULT '0',
@@ -283,7 +283,7 @@ CREATE TABLE `stocks_extends` (
   `v_ma20` double NOT NULL DEFAULT '0',
   `turnover` double NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
-  UNIQUE KEY code_date (`code`, `date`)
+  UNIQUE KEY code (`code`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `close_ene_lower`;

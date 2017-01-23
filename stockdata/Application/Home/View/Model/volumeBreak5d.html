@@ -22,6 +22,7 @@
                             <th>Cost_price</th>
                             <th style="cursor:pointer;color:#67D3E0;"><span>V2ma5&nbsp;</span><span><if condition="$Think.get.sort eq 'V2ma5'"><if condition="$Think.get.desc eq 1">↓<else />↑</if></if></span></th>
                             <th style="cursor:pointer;color:#67D3E0;"><span>V2ma20&nbsp;</span><span><if condition="$Think.get.sort eq 'V2ma20'"><if condition="$Think.get.desc eq 1">↓<else />↑</if></if></span></th>
+                            <th style="cursor:pointer;color:#67D3E0;"><span>P_change&nbsp;</span><span><if condition="$Think.get.sort eq 'P_change'"><if condition="$Think.get.desc eq 1">↓<else />↑</if></if></span></th>
                             <th style="cursor:pointer;color:#67D3E0;"><span>Percent&nbsp;</span><span><if condition="$Think.get.sort eq 'Percent'"><if condition="$Think.get.desc eq 1">↓<else />↑</if></if></span></th>
                             <th style="cursor:pointer;color:#67D3E0;"><span>Cur_per&nbsp;</span><span><if condition="$Think.get.sort eq 'Cur_per'"><if condition="$Think.get.desc eq 1">↓<else />↑</if></if></span></th>
                             <th>Close</th>
@@ -46,6 +47,7 @@
                                 <td>{$vo.cost_price}</td>
                                 <td>{$vo.v2ma5|round=###,2}</td>
                                 <td>{$vo.v2ma20|round=###,2}</td>
+                                <td <if condition="$vo.p_change egt 5">style="color: red"</if>>{$vo.p_change|round=###,2}%</td>
                                 <td>{$vo.percent|round=###,2}</td>
                                 <td>{$vo.cur_per|round=###,2}</td>
                                 <td>{$vo.close}</td>
