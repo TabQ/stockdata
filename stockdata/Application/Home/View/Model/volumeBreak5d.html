@@ -47,7 +47,7 @@
                                 <td>{$vo.cost_price}</td>
                                 <td>{$vo.v2ma5|round=###,2}</td>
                                 <td>{$vo.v2ma20|round=###,2}</td>
-                                <td <if condition="$vo.p_change egt 5">style="color: red"</if>>{$vo.p_change|round=###,2}%</td>
+                                <td <if condition="$vo.p_change egt 3">style="color: red"</if>>{$vo.p_change|round=###,2}%</td>
                                 <td>{$vo.percent|round=###,2}</td>
                                 <td>{$vo.cur_per|round=###,2}</td>
                                 <td>{$vo.close}</td>
