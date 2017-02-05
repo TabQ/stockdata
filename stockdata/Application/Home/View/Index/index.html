@@ -36,7 +36,6 @@
                             <th>Choose</th>
                             <th>Name</th>
                             <th style="cursor:pointer;color:#67D3E0;"><span>Date&nbsp;</span><span><if condition="$Think.const.ACTION_NAME eq 'Date'"><if condition="$Think.get.desc eq 1">↓<else />↑</if></if></span></th>
-                            <th style="cursor:pointer;color:#67D3E0;"><span>Latest&nbsp;</span><span><if condition="$Think.const.ACTION_NAME eq 'Latest'"><if condition="$Think.get.desc eq 1">↓<else />↑</if></if></span></th>
                             <th>Code</th>
                             <th>Industry</th>
                             <th style="cursor:pointer;color:#67D3E0;"><span>Man_date&nbsp;</span><span><if condition="$Think.const.ACTION_NAME eq 'Man_date'"><if condition="$Think.get.desc eq 1">↓<else />↑</if></if></span></th>
@@ -48,7 +47,6 @@
                             <th style="cursor:pointer;color:#67D3E0;"><span>Rec3Tops&nbsp;</span><span><if condition="$Think.const.ACTION_NAME eq 'Rec3Tops'"><if condition="$Think.get.desc eq 1">↓<else />↑</if></if></span></th>
                             <th style="cursor:pointer;color:#67D3E0;"><span>Rec5Tops&nbsp;</span><span><if condition="$Think.const.ACTION_NAME eq 'Rec5Tops'"><if condition="$Think.get.desc eq 1">↓<else />↑</if></if></span></th>
                             <th>TimeToMarket</th>
-                            <th id="count" style="cursor:pointer;color:#67D3E0;"><span>Count&nbsp;</span><span><if condition="$Think.const.ACTION_NAME eq 'Count'"><if condition="$Think.get.desc eq 1">↓<else />↑</if></if></span></th>
                             <th id="yield_rate" style="cursor:pointer;color:#67D3E0;"><span>Yield_rate&nbsp;</span><span><if condition="$Think.const.ACTION_NAME eq 'index'">↓<elseif condition="$Think.const.ACTION_NAME eq 'Yield_rate'"/><if condition="$Think.get.desc eq 1">↓<else />↑</if></if></span></th>
                         </tr>
                         </thead>
@@ -58,7 +56,6 @@
                                 <td><label><input name="choose" type="checkbox" value="{$vo.id}" />&nbsp;&nbsp;删除</label></td>
                                 <td><a href="{:U('Detail/index',array('code'=>$vo['code']))}">{$vo.name}</a></td>
                                 <td>{$vo.date}</td>
-                                <td>{$vo.latest}</td>
                                 <td><a href="{:U('Detail/index',array('code'=>$vo['code']))}">{$vo.code}</a></td>
                                 <td>{$vo.industry}</td>
                                 <td>{$vo.man_date}</td>
@@ -70,7 +67,6 @@
                                 <td>{$vo.rec3tops|round=###,2}</td>
                                 <td>{$vo.rec5tops|round=###,2}</td>
                                 <td>{$vo.timetomarket|format_date}</td>
-                                <td>{$vo.count}</td>
                                 <td>{$vo.yield_rate|round=###,2}%</td>
                             </tr>
                         </foreach>

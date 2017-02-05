@@ -29,7 +29,7 @@ class IndexController extends Controller {
             ->where($map)
             ->join('left join focus_type on focus_pool.type_id = focus_type.id')
             ->join('left join stocks_info on focus_pool.code = stocks_info.code')
-            ->field('focus_pool.id, focus_pool.code, focus_pool.date, count, latest, industry, focus_pool.man_date, focus_type.name as fname, subtype_id, focus_pool.cost_price, focus_pool.yield_rate, stocks_info.name, rec3minus, rec5minus, rec3tops, rec5tops, timetomarket')
+            ->field('focus_pool.id, focus_pool.code, focus_pool.date, industry, focus_pool.man_date, focus_type.name as fname, subtype_id, focus_pool.cost_price, focus_pool.yield_rate, stocks_info.name, rec3minus, rec5minus, rec3tops, rec5tops, timetomarket')
             ->order($sort)
             ->limit($page->firstRow.','.$page->listRows)
             ->select();

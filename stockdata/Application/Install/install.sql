@@ -3,8 +3,6 @@ CREATE TABLE `focus_pool` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `code` varchar(10) NOT NULL DEFAULT '',
   `date` char(10) NOT NULL DEFAULT '',
-  `count` smallint(3) unsigned NOT NULL DEFAULT '1',
-  `latest` char(10) NOT NULL DEFAULT '',
   `man_date` char(10) NOT NULL DEFAULT '',
   `type_id` tinyint(2) unsigned NOT NULL DEFAULT '0',
   `subtype_id` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '子类型：1.自动；2.手动',
@@ -17,7 +15,7 @@ CREATE TABLE `focus_pool` (
   `rec3topsdate` char(10) NOT NULL DEFAULT '' COMMENT '记录最近3天收益率排top10数目的日期',
   `rec5topsdate` char(10) NOT NULL DEFAULT '' COMMENT '记录最近5天收益率排top10数目的日期',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `code_type_subtype` (`code`, `type_id`, `subtype_id`)
+  UNIQUE KEY `code_date_type_subtype` (`code`, `date`, `type_id`, `subtype_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `focus_type`;
@@ -305,3 +303,15 @@ CREATE TABLE `up_down` (
   PRIMARY KEY (`id`),
   UNIQUE KEY code_date (`code`, `date`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='接近ENE下轨';
+
+DROP TABLE IF EXISTS `test_yield`;
+CREATE TABLE `test_yield` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `start_date` char(10) NOT NULL DEFAULT '',
+  `end_date` char(10) NOT NULL DEFAULT '',
+  `sum_yield` double NOT NULL DEFAULT '0',
+  `type` char(1) NOT NULL DEFAULT 'A',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY start_date_type (`start_date`, `type`),
+  UNIQUE KEY end_date_type (`end_date`, `type`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
