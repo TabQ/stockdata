@@ -33,7 +33,7 @@ def diff_between_two_days(day1, day2):
 def ma_date(cursor, code, type = 'S', date = str(date.today()), n = 5):
     code = get_code(code, type)
     
-    sql = "select close from k_data where code=%s and type=%s and date<=%s order by date desc limit %s"
+    sql = "select close, date from k_data where code=%s and type=%s and date<=%s order by date desc limit %s"
     param = (code, type, date, n)
     cursor.execute(sql, param)
     results = cursor.fetchall()
@@ -42,7 +42,13 @@ def ma_date(cursor, code, type = 'S', date = str(date.today()), n = 5):
     sum = 0
     
     for row in results:
-        sum += row[0]
+        close = row[0]
+        now = row[1]
+        
+        if count == 0 and now != date:
+            break
+        
+        sum += close
         count += 1
         
     if count == n:
@@ -57,7 +63,7 @@ def ma_date(cursor, code, type = 'S', date = str(date.today()), n = 5):
 def ma_vol_date(cursor, code, type='S', date = str(date.today()), n = 5):
     code = get_code(code, type)
     
-    sql = "select volume from k_data where code=%s and type=%s and date<=%s order by date desc limit %s"
+    sql = "select volume, date from k_data where code=%s and type=%s and date<=%s order by date desc limit %s"
     param = (code, type, date, n)
     cursor.execute(sql, param)
     results = cursor.fetchall()
@@ -66,7 +72,13 @@ def ma_vol_date(cursor, code, type='S', date = str(date.today()), n = 5):
     sum = 0
     
     for row in results:
-        sum += row[0]
+        volume = row[0]
+        now = row[1]
+        
+        if count == 0 and now != date:
+            break
+        
+        sum += volume
         count += 1
         
     if count == n:
@@ -81,7 +93,7 @@ def ma_vol_date(cursor, code, type='S', date = str(date.today()), n = 5):
 def max_ma_vol_date(cursor, code, type = 'S', date = str(date.today()), n = 5):
     code = get_code(code, type)
     
-    sql = "select volume from k_data where code=%s and type=%s and date<=%s order by date desc limit %s"
+    sql = "select volume, date from k_data where code=%s and type=%s and date<=%s order by date desc limit %s"
     param = (code, type, date, n)
     cursor.execute(sql, param)
     results = cursor.fetchall()
@@ -91,11 +103,17 @@ def max_ma_vol_date(cursor, code, type = 'S', date = str(date.today()), n = 5):
     max = 0
     
     for row in results:
-        sum += row[0]
+        volume = row[0]
+        now = row[1]
+        
+        if count == 0 and now != date:
+            break
+        
+        sum += volume
         count += 1
         
-        if row[0] > max:
-            max = row[0]
+        if volume > max:
+            max = volume
             
     if count == n:
         sum /= n

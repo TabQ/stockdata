@@ -225,14 +225,22 @@ def p_change(start = str(date.today()), end = str(date.today())):
         for row in results:
             date = row[0]
             
-            sql = "select close from k_data where code=%s and type=%s and date<=%s order by date desc limit 2"
+            sql = "select close, date from k_data where code=%s and type=%s and date<=%s order by date desc limit 2"
             param = (code, type, date)
             cursor.execute(sql, param)
             close_results =  cursor.fetchall()
             
+            count = 0
             close_list = []
             for close_row in close_results:
-                close_list.append(close_row[0])
+                close = close_row[0]
+                now = close_row[1]
+                
+                if count == 0 and now != date:
+                    break
+
+                count += 1                
+                close_list.append(close)
                 
             if len(close_list) != 2:
                 continue
