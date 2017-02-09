@@ -25,22 +25,25 @@ CREATE TABLE `focus_type` (
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='关注类型';
 INSERT INTO `focus_type` VALUES(1, '近期关注');
-INSERT INTO `focus_type` VALUES(2, '成交量突破5d');
-INSERT INTO `focus_type` VALUES(3, 'ene打上轨');
-INSERT INTO `focus_type` VALUES(4, 'ene打下轨');
-INSERT INTO `focus_type` VALUES(5, 'ene接近下轨');
-INSERT INTO `focus_type` VALUES(6, '成交量突破20d');
-
-DROP TABLE IF EXISTS `volume_break`;
-CREATE TABLE `volume_break`(
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `code` varchar(10) NOT NULL DEFAULT '',
-  `date` char(10) NOT NULL DEFAULT '',
-  `v2ma5` double NOT NULL DEFAULT '0',
-  `v2ma20` double NOT NULL DEFAULT '0',
-  PRIMARY KEY (`id`),
-  UNIQUE KEY code_date (`code`, `date`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+INSERT INTO `focus_type` VALUES(2, 'ene打上轨');
+INSERT INTO `focus_type` VALUES(3, 'ene打下轨');
+INSERT INTO `focus_type` VALUES(4, 'ene接近下轨');
+INSERT INTO `focus_type` VALUES(5, '成交量突破5d');
+INSERT INTO `focus_type` VALUES(6, '成交量突破10d');
+INSERT INTO `focus_type` VALUES(7, '成交量突破20d');
+INSERT INTO `focus_type` VALUES(8, '缩量max');
+INSERT INTO `focus_type` VALUES(9, '缩量max_5d');
+INSERT INTO `focus_type` VALUES(10, '缩量max_10d');
+INSERT INTO `focus_type` VALUES(11, '缩量max_20d');
+INSERT INTO `focus_type` VALUES(12, '缩量max_60d');
+INSERT INTO `focus_type` VALUES(13, '缩量max_120d');
+INSERT INTO `focus_type` VALUES(14, '缩量ma_5d');
+INSERT INTO `focus_type` VALUES(15, '缩量ma_10d');
+INSERT INTO `focus_type` VALUES(16, '缩量ma_20d');
+INSERT INTO `focus_type` VALUES(17, '缩量ma_60d');
+INSERT INTO `focus_type` VALUES(18, '缩量ma_120d');
+INSERT INTO `focus_type` VALUES(19, 'ene候选');
+INSERT INTO `focus_type` VALUES(20, 'ene弃选');
 
 DROP TABLE IF EXISTS `action_type`;
 CREATE TABLE `action_type` (
@@ -61,6 +64,7 @@ DROP TABLE IF EXISTS `stocks_info`;
 CREATE TABLE `stocks_info` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `code` varchar(10) NOT NULL DEFAULT '',
+  `type` char(1) NOT NULL DEFAULT 'S',
   `name` char(30) NOT NULL DEFAULT '',
   `industry` char(30) NOT NULL DEFAULT '',
   `area` char(30) NOT NULL DEFAULT '',
@@ -77,8 +81,12 @@ CREATE TABLE `stocks_info` (
   `pb` double NOT NULL DEFAULT '0',
   `timeToMarket` char(10) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `code` (`code`)
+  UNIQUE KEY `code_type` (`code`,`type`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+INSERT INTO `stocks_info`(code, type, name) VALUES('000001', 'I', '上证指数');
+INSERT INTO `stocks_info`(code, type, name) VALUES('399001', 'I', '深证成指');
+INSERT INTO `stocks_info`(code, type, name) VALUES('399005', 'I', '中小板指');
+INSERT INTO `stocks_info`(code, type, name) VALUES('399006', 'I', '创业板指');
 
 DROP TABLE IF EXISTS `stocks_report`;
 CREATE TABLE `stocks_report` (
@@ -144,13 +152,14 @@ CREATE TABLE `k_data` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `code` varchar(10) NOT NULL DEFAULT '',
   `date` char(10) NOT NULL DEFAULT '',
+  `type` char(1) NOT NULL DEFAULT 'S',
   `open` double NOT NULL DEFAULT '0',
   `high` double NOT NULL DEFAULT '0',
   `low` double NOT NULL DEFAULT '0',
   `close` double NOT NULL DEFAULT '0',
   `volume` double NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `code_date` (`code`,`date`)
+  UNIQUE KEY `code_date_type` (`code`,`date`,`type`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `super_wave`;
@@ -269,9 +278,15 @@ DROP TABLE IF EXISTS `stocks_extends`;
 CREATE TABLE `stocks_extends` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `code` varchar(10) NOT NULL DEFAULT '',
+  `date` varchar(10) NOT NULL DEFAULT '',
+  `type` char(1) NOT NULL DEFAULT 'S',
   `p_change` double NOT NULL DEFAULT '0' COMMENT '涨跌幅',
+  `dist_per` double NOT NULL DEFAULT '0' COMMENT '最低价到ene下轨的距离相当于轨道间距的百分比',
   `ma5` double NOT NULL DEFAULT '0',
   `ma10` double NOT NULL DEFAULT '0',
+  `ma13` double NOT NULL DEFAULT '0' COMMENT '主要用来计算板块指数及个股持股线',
+  `ma14` double NOT NULL DEFAULT '0' COMMENT '主要用来计算板块指数及个股持股线',
+  `ma15` double NOT NULL DEFAULT '0' COMMENT '主要用来计算板块指数及个股持股线',
   `ma20` double NOT NULL DEFAULT '0',
   `ma60` double NOT NULL DEFAULT '0',
   `ma120` double NOT NULL DEFAULT '0',
@@ -279,30 +294,51 @@ CREATE TABLE `stocks_extends` (
   `v_ma5` double NOT NULL DEFAULT '0',
   `v_ma10` double NOT NULL DEFAULT '0',
   `v_ma20` double NOT NULL DEFAULT '0',
+  `v_ma60` double NOT NULL DEFAULT '0',
+  `v_ma120` double NOT NULL DEFAULT '0',
+  `max_vol5` double NOT NULL DEFAULT '0',
+  `max_vol10` double NOT NULL DEFAULT '0',
+  `max_vol20` double NOT NULL DEFAULT '0',
+  `max_vol60` double NOT NULL DEFAULT '0',
+  `max_vol120` double NOT NULL DEFAULT '0',
   `turnover` double NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
-  UNIQUE KEY code (`code`)
+  UNIQUE KEY code_date_type (`code`, `date`, `type`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-DROP TABLE IF EXISTS `close_ene_lower`;
-CREATE TABLE `close_ene_lower` (
+DROP TABLE IF EXISTS `volume`;
+CREATE TABLE `volume` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `code` varchar(10) NOT NULL DEFAULT '',
-  `date` char(10) NOT NULL DEFAULT '',
-  `dist_per` double NOT NULL DEFAULT '0' COMMENT '最低价到ene下轨的距离相当于轨道间距的百分比',
+  `date` varchar(10) NOT NULL DEFAULT '',
+  `vol_break_5d` double NOT NULL DEFAULT '0',
+  `vol_break_10d` double NOT NULL DEFAULT '0',
+  `vol_break_20d` double NOT NULL DEFAULT '0',
+  `vol_shrink_max` double NOT NULL DEFAULT '0',
+  `vol_shrink_max_5d` double NOT NULL DEFAULT '0',
+  `vol_shrink_max_10d` double NOT NULL DEFAULT '0',
+  `vol_shrink_max_20d` double NOT NULL DEFAULT '0',
+  `vol_shrink_max_60d` double NOT NULL DEFAULT '0',
+  `vol_shrink_max_120d` double NOT NULL DEFAULT '0',
+  `vol_shrink_ma_5d` double NOT NULL DEFAULT '0',
+  `vol_shrink_ma_10d` double NOT NULL DEFAULT '0',
+  `vol_shrink_ma_20d` double NOT NULL DEFAULT '0',
+  `vol_shrink_ma_60d` double NOT NULL DEFAULT '0',
+  `vol_shrink_ma_120d` double NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
-  UNIQUE KEY code_date (`code`, `date`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='接近ENE下轨';
+  UNIQUE KEY `code_date` (`code`, `date`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-DROP TABLE IF EXISTS `up_down`;
-CREATE TABLE `up_down` (
+DROP TABLE IF EXISTS `stocks_summit`;
+CREATE TABLE `stocks_summit` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `code` varchar(10) NOT NULL DEFAULT '',
-  `date` char(10) NOT NULL DEFAULT '',
-  `percent` double NOT NULL DEFAULT '0' COMMENT '每个交易日涨跌幅度',
+  `type` char(1) NOT NULL DEFAULT 'S',
+  `max_vol` double NOT NULL DEFAULT '0',
+  `max_price` double NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
-  UNIQUE KEY code_date (`code`, `date`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='接近ENE下轨';
+  UNIQUE KEY code_type (`code`, `type`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `test_yield`;
 CREATE TABLE `test_yield` (

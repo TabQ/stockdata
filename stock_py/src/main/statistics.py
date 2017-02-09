@@ -7,73 +7,259 @@ import time
 import traceback
 import sys
 
-from common import diff_between_two_days
+from common import diff_between_two_days, ma_date, max_ma_vol_date, max_vol_price
 
-def stocks_extends(today = str(date.today())):
-    print 'stocks_extends start: ', datetime.datetime.now()
+# 处理所有股票的最大成交量及最高收盘价
+def handle_max_vol_price():
+    print 'handle_max_vol_price start: ', datetime.datetime.now()
     
     conn = MySQLdb.connect(host="localhost", user="root", passwd="root", db="stock", charset="utf8")
     cursor = conn.cursor()
     
-    # stocks_extends入库开始记入日志
-    now = time.time()
-    sql = "insert into action_log(action_id, time) values(%s, %s)"
-    param = (3, now)
-    cursor.execute(sql, param)
-    conn.commit()
+    sql = "select code,type from stocks_info"
+    cursor.execute(sql)
+    results = cursor.fetchall()
     
-    sql = "select code from stocks_info"
+    for row in results:
+        code = row[0]
+        type = row[1]
+        
+        max_vol_price_tuple = max_vol_price(cursor, code, type)
+        max_vol = max_vol_price_tuple[0]
+        max_price = max_vol_price_tuple[1]
+        
+        sql = "select id from stocks_summit where code=%s and type=%s"
+        param = (code, type)
+        cursor.execute(sql, param)
+        exists = cursor.fetchone()
+        
+        if exists:
+            sql = "update stocks_summit set max_vol=%s, max_price=%s where code=%s and type=%s"
+        else:
+            sql = "insert into stocks_summit(max_vol, max_price, code, type) values(%s, %s, %s, %s)"
+            
+        param = (max_vol, max_price, code, type)
+        cursor.execute(sql, param)
+        conn.commit()
+        
+    cursor.close()
+    conn.close()
+    
+    print 'handle_max_vol_price end: ', datetime.datetime.now()
+
+# 处理所有股票某个时间段的几条重要最大成交量及均量
+def handle_max_ma_vol(start = str(date.today()), end = str(date.today())):
+    print 'handle_max_ma_vol start: ', datetime.datetime.now()
+    
+    conn = MySQLdb.connect(host="localhost", user="root", passwd="root", db="stock", charset="utf8")
+    cursor = conn.cursor()
+    
+    days_list = [5, 10, 20, 60, 120]
+    
+    sql = "select calendarDate from trade_cal where calendarDate>=%s and calendarDate<=%s and isOpen=1"
+    param = (start, end)
+    cursor.execute(sql, param)
+    results = cursor.fetchall()
+    
+    for row in results:
+        date = row[0]
+        
+        sql = "select code,type from stocks_info"
+        cursor.execute(sql)
+        codes_results = cursor.fetchall()
+        for codes_row in codes_results:
+            code = codes_row[0]
+            type = codes_row[1]
+            
+            for n in days_list:
+                max_ma = max_ma_vol_date(cursor, code, type, date, n)
+                
+                if max_ma == -1:
+                    continue
+                else:
+                    max = max_ma[0]
+                    ma  = max_ma[1]
+                    
+                    sql = "select id from stocks_extends where code=%s and date=%s and type=%s"
+                    param = (code, date, type)
+                    cursor.execute(sql, param)
+                    exists = cursor.fetchone()
+                    if exists:
+                        if n == 5:
+                            sql = "update stocks_extends set v_ma5=%s, max_vol5=%s where id=%s"
+                        elif n == 10:
+                            sql = "update stocks_extends set v_ma10=%s, max_vol10=%s where id=%s"
+                        elif n == 20:
+                            sql = "update stocks_extends set v_ma20=%s, max_vol20=%s where id=%s"
+                        elif n == 60:
+                            sql = "update stocks_extends set v_ma60=%s, max_vol60=%s where id=%s"
+                        elif n == 120:
+                            sql = "update stocks_extends set v_ma120=%s, max_vol120=%s where id=%s"
+                         
+                        param = (ma, max, exists[0])
+                    else:
+                        if n == 5:
+                            sql = "insert into stocks_extends(code, date, type, v_ma5, max_vol5) values(%s, %s, %s, %s, %s)"
+                        elif n == 10:
+                            sql = "insert into stocks_extends(code, date, type, v_ma10, max_vol10) values(%s, %s, %s, %s, %s)"
+                        elif n == 20:
+                            sql = "insert into stocks_extends(code, date, type, v_ma20, max_vol20) values(%s, %s, %s, %s, %s)"
+                        elif n == 60:
+                            sql = "insert into stocks_extends(code, date, type, v_ma60, max_vol60) values(%s, %s, %s, %s, %s)"
+                        elif n == 120:
+                            sql = "insert into stocks_extends(code, date, type, v_ma120, max_vol120) values(%s, %s, %s, %s, %s)"
+                             
+                        param = (code, date, type, ma, max)
+                        
+                    cursor.execute(sql, param)
+                    conn.commit()
+                    
+    cursor.close()
+    conn.close()
+    
+    print 'handle_max_ma_vol end: ', datetime.datetime.now()
+
+# 处理某个时间段的所有股票的移动平均线
+def handle_ma(start = str(date.today()), end = str(date.today())):
+    print 'handle_ma start: ', datetime.datetime.now()
+    
+    conn = MySQLdb.connect(host="localhost", user="root", passwd="root", db="stock", charset="utf8")
+    cursor = conn.cursor()
+    
+    days_list = [5, 10, 13, 14, 15, 20, 60, 120, 250]
+    
+    sql = "select calendarDate from trade_cal where calendarDate>=%s and calendarDate<=%s and isOpen=1"
+    param = (start, end)
+    cursor.execute(sql, param)
+    results = cursor.fetchall()
+    
+    for row in results:
+        date = row[0]
+        
+        sql = "select code, type from stocks_info"
+        cursor.execute(sql)
+        codes_results = cursor.fetchall()
+        for codes_row in codes_results:
+            code = codes_row[0]
+            type = codes_row[1]
+            
+            for n in days_list:
+                ma_now = ma_date(cursor, code, type, date, n)
+                if ma_now < 0:
+                    continue
+                else:
+                    sql = "select id from stocks_extends where code=%s and date=%s and type=%s"
+                    param = (code, date, type)
+                    cursor.execute(sql, param)
+                    exists = cursor.fetchone()
+                    
+                    if exists:
+                        if n == 5:
+                            sql = "update stocks_extends set ma5=%s where code=%s and date=%s and type=%s"
+                        elif n == 10:
+                            sql = "update stocks_extends set ma10=%s where code=%s and date=%s and type=%s"
+                        elif n == 13:
+                            sql = "update stocks_extends set ma13=%s where code=%s and date=%s and type=%s"
+                        elif n == 14:
+                            sql = "update stocks_extends set ma14=%s where code=%s and date=%s and type=%s"
+                        elif n == 15:
+                            sql = "update stocks_extends set ma15=%s where code=%s and date=%s and type=%s"
+                        elif n == 20:
+                            sql = "update stocks_extends set ma20=%s where code=%s and date=%s and type=%s"
+                        elif n == 60:
+                            sql = "update stocks_extends set ma60=%s where code=%s and date=%s and type=%s"
+                        elif n == 120:
+                            sql = "update stocks_extends set ma120=%s where code=%s and date=%s and type=%s"
+                        elif n == 250:
+                            sql = "update stocks_extends set ma250=%s where code=%s and date=%s and type=%s"
+                    else:
+                        if n == 5:
+                            sql = "insert into stocks_extends(ma5,code,date,type) values(%s,%s,%s,%s)"
+                        elif n == 10:
+                            sql = "insert into stocks_extends(ma10,code,date,type) values(%s,%s,%s,%s)"
+                        elif n == 13:
+                            sql = "insert into stocks_extends(ma13,code,date,type) values(%s,%s,%s,%s)"
+                        elif n == 14:
+                            sql = "insert into stocks_extends(ma14,code,date,type) values(%s,%s,%s,%s)"
+                        elif n == 15:
+                            sql = "insert into stocks_extends(ma15,code,date,type) values(%s,%s,%s,%s)"
+                        elif n == 20:
+                            sql = "insert into stocks_extends(ma20,code,date,type) values(%s,%s,%s,%s)"
+                        elif n == 60:
+                            sql = "insert into stocks_extends(ma60,code,date,type) values(%s,%s,%s,%s)"
+                        elif n == 120:
+                            sql = "insert into stocks_extends(ma120,code,date,type) values(%s,%s,%s,%s)"
+                        elif n == 250:
+                            sql = "insert into stocks_extends(ma250,code,date,type) values(%s,%s,%s,%s)"
+                            
+                    param = (ma_now, code, date, type)
+                    cursor.execute(sql, param)
+                    conn.commit()
+                
+    cursor.close()
+    conn.close()
+    
+    print 'handle_ma end: ', datetime.datetime.now()
+
+# 计算每日涨跌幅
+def p_change(start = str(date.today()), end = str(date.today())):
+    print 'p_change start: ', datetime.datetime.now()
+    
+    conn = MySQLdb.connect(host="localhost", user="root", passwd="root", db="stock", charset="utf8")
+    cursor = conn.cursor()
+    
+    sql = "select code,type from stocks_info"
     
     cursor.execute(sql)
     results = cursor.fetchall()
     
     for row in results:
         code = row[0]
+        type = row[1]
     
-        sql = "select close from k_data where code='"+code+"' order by date desc limit 1"
-        cursor.execute(sql)
-        res_today =  cursor.fetchone()
-        if res_today:
-            close_today = res_today[0]
-        else:
-            continue
-        
-        sql = "select close from k_data where code='"+code+"' order by date desc limit 1,1"
-        cursor.execute(sql)
-        res_yesterday = cursor.fetchone()
-        if res_yesterday:
-            close_yesterday = res_yesterday[0]
-        else:
-            continue
-    
-        p_change = (close_today - close_yesterday) * 100.00 / close_yesterday
-        
-        sql = "select code from stocks_extends where code='"+code+"'"
-        cursor.execute(sql)
-        res_exist = cursor.fetchone()
-        
-        if res_exist:
-            sql = "update stocks_extends set p_change=%s where code=%s"
-        else:
-            sql = "insert into stocks_extends(p_change, code) values(%s, %s)"
-            
-        param = (p_change, code)
+        sql = "select calendarDate from trade_cal where calendarDate>=%s and calendarDate<=%s and isOpen=1"
+        param = (start, end)
         cursor.execute(sql, param)
-        conn.commit()
+        results = cursor.fetchall()
+        
+        for row in results:
+            date = row[0]
             
-    # stocks_extends入库结束记入日志
-    now = time.time()
-    sql = "insert into action_log(action_id, time) values(%s, %s)"
-    param = (4, now)
-    cursor.execute(sql, param)
-    conn.commit()
+            sql = "select close from k_data where code=%s and type=%s and date<=%s order by date desc limit 2"
+            param = (code, type, date)
+            cursor.execute(sql, param)
+            close_results =  cursor.fetchall()
+            
+            close_list = []
+            for close_row in close_results:
+                close_list.append(close_row[0])
+                
+            if len(close_list) != 2:
+                continue
+            else:
+                p_change = (close_list[0] - close_list[1]) * 100.00 / close_list[1]
+                p_change = round(p_change, 2)
+            
+            sql = "select id from stocks_extends where code=%s and date=%s and type=%s"
+            param = (code, date, type)
+            cursor.execute(sql, param)
+            exists = cursor.fetchone()
+            
+            if exists:
+                sql = "update stocks_extends set p_change=%s where code=%s and date=%s and type=%s"
+            else:
+                sql = "insert into stocks_extends(p_change, code, date, type) values(%s, %s, %s, %s)"
+                
+            param = (p_change, code, date, type)
+            cursor.execute(sql, param)
+            conn.commit()
     
     cursor.close()
     conn.close()
     
-    print 'stocks_extends end: ', datetime.datetime.now()
+    print 'p_change end: ', datetime.datetime.now()
     
-
+# 计算关注池收益率
 def focus_pool_rate(today = str(date.today())):
     print 'focus_pool_rate start: ', datetime.datetime.now()
     
@@ -185,59 +371,127 @@ def focus_pool_rate(today = str(date.today())):
     
     print 'focus_pool_rate end: ', datetime.datetime.now()
     
-
-def up_down(today = str(date.today())):
-    print 'up_down start: ', datetime.datetime.now()
+# 成交量相关计算（突破，缩量）
+def volume(start = str(date.today()), end = str(date.today())):
+    print 'volume start: ', datetime.datetime.now()
     
     conn = MySQLdb.connect(host="localhost", user="root", passwd="root", db="stock", charset="utf8")
     cursor = conn.cursor()
     
-    sql = "select calendarDate from trade_cal where isOpen=1 and calendarDate='" + today + "'"
-    cursor.execute(sql)
-    dateRes = cursor.fetchone()
+    sql = "select calendarDate from trade_cal where calendarDate>=%s and calendarDate<=%s and isOpen=1"
+    param = (start, end)
+    cursor.execute(sql, param)
+    results = cursor.fetchall()
     
-    if dateRes:
-        # 每日涨跌幅入库开始־
-        now = time.time()
-        sql = "insert into action_log(action_id, time) values(%s, %s)"
-        param = (18, now)
-        cursor.execute(sql, param)
-        conn.commit()
+    for row in results:
+        date = row[0]
         
-        sql = "select k.code, close, timeToMarket from k_data as k, stocks_info as s where k.code = s.code and date='" + today + "'"
+        sql = "select code, timeToMarket from stocks_info where type='S'"
         cursor.execute(sql)
-        results = cursor.fetchall()
+        codes_results = cursor.fetchall()
         
-        for row in results:
-            code = row[0]
-            close = row[1]
-            timetomarket = row[2]
+        for code_row in codes_results:
+            code = code_row[0]
+            timeToMarket = code_row[1]
             
-            if diff_between_two_days(today, timetomarket) < 30:
+            if diff_between_two_days(date, timeToMarket) < 3*30:
                 continue
             
-            sql = "select close from k_data where code = %s and date < %s order by date desc limit 1"
-            param = (code, today)
+            sql = "select volume from k_data where code=%s and date=%s and type='S'"
+            param = (code, date)
             cursor.execute(sql, param)
-            yest_res = cursor.fetchone()
+            vol_result = cursor.fetchone()
             
-            if yest_res:
-                yest_close = yest_res[0]
-                percent = (close - yest_close) * 100.00 / yest_close
-                if abs(percent) > 2.00:
-                    sql = "insert into up_down(code, date, percent) values(%s, %s, %s)"
-                    param = (code, today, percent)
+            if vol_result:
+                volume = vol_result[0]
+            else:
+                continue
+            
+            sql = "select v_ma5,v_ma10,v_ma20,v_ma60,v_ma120,max_vol5,max_vol10,max_vol20,max_vol60,max_vol120 from stocks_extends where code=%s and date=%s and type='S'"
+            param = (code, date)
+            cursor.execute(sql, param)
+            extends_result = cursor.fetchone()
+            
+            if extends_result:
+                v_ma5       = extends_result[0]
+                v_ma10      = extends_result[1]
+                v_ma20      = extends_result[2]
+                v_ma60      = extends_result[3]
+                v_ma120     = extends_result[4]
+                max_vol5    = extends_result[5]
+                max_vol10   = extends_result[6]
+                max_vol20   = extends_result[7]
+                max_vol60   = extends_result[8]
+                max_vol120  = extends_result[9]
+                
+                vol_break_5d = vol_break_10d = vol_break_20d = 0
+                vol_shrink_ma_5d = vol_shrink_ma_10d = vol_shrink_ma_20d = vol_shrink_ma_60d = vol_shrink_ma_120d = 0
+                vol_shrink_max_5d = vol_shrink_max_10d = vol_shrink_max_20d = vol_shrink_max_60d = vol_shrink_max_120d = 0
+                
+                if v_ma5 != 0:
+                    vol_break_5d = vol_shrink_ma_5d = round(volume / v_ma5, 2)
+                if v_ma10 != 0:
+                    vol_break_10d = vol_shrink_ma_10d = round(volume / v_ma10, 2)
+                if v_ma20 != 0:
+                    vol_break_20d = vol_shrink_ma_20d = round(volume / v_ma20, 2)
+                if v_ma60 != 0:
+                    vol_shrink_ma_60d = round(volume / v_ma60, 2)
+                if v_ma120 != 0:
+                    vol_shrink_ma_120d = round(volume / v_ma120, 2)
+                if max_vol5 != 0:
+                    vol_shrink_max_5d = round(volume / max_vol5, 2)
+                if max_vol10 != 0:
+                    vol_shrink_max_10d = round(volume / max_vol10, 2)
+                if max_vol20 != 0:
+                    vol_shrink_max_20d = round(volume / max_vol20, 2)
+                if max_vol60 != 0:
+                    vol_shrink_max_60d = round(volume / max_vol60, 2)
+                if max_vol120 != 0:
+                    vol_shrink_max_120d = round(volume / max_vol120, 2)
+                    
+                sql = "select id from volume where code=%s and date=%s"
+                param = (code, date)
+                cursor.execute(sql, param)
+                exists = cursor.fetchone()
+                
+                if exists:
+                    sql = '''update volume set vol_break_5d=%s, vol_break_10d=%s, vol_break_20d=%s, vol_shrink_max_5d=%s, vol_shrink_max_10d=%s, vol_shrink_max_20d=%s, 
+                    vol_shrink_max_60d=%s, vol_shrink_max_120d=%s, vol_shrink_ma_5d=%s, vol_shrink_ma_10d=%s, vol_shrink_ma_20d=%s, vol_shrink_ma_60d=%s, vol_shrink_ma_120d=%s 
+                    where code=%s and date=%s'''
+                else:
+                    sql = '''insert into volume(vol_break_5d, vol_break_10d, vol_break_20d, vol_shrink_max_5d, vol_shrink_max_10d, vol_shrink_max_20d, 
+                    vol_shrink_max_60d, vol_shrink_max_120d, vol_shrink_ma_5d, vol_shrink_ma_10d, vol_shrink_ma_20d, vol_shrink_ma_60d, vol_shrink_ma_120d, code, date) 
+                    values(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'''
+                    
+                param = (vol_break_5d, vol_break_10d, vol_break_20d, vol_shrink_max_5d, vol_shrink_max_10d, vol_shrink_max_20d, vol_shrink_max_60d, vol_shrink_max_120d,\
+                         vol_shrink_ma_5d, vol_shrink_ma_10d, vol_shrink_ma_20d, vol_shrink_ma_60d, vol_shrink_ma_120d, code, date)
+                cursor.execute(sql, param)
+                conn.commit()
+            
+            sql = "select max_vol from stocks_summit where code=%s and type='S'"
+            param = (code)
+            cursor.execute(sql, param)
+            max_vol_result = cursor.fetchone()
+            
+            if max_vol_result:
+                max_vol = max_vol_result[0]
+                
+                if max_vol != 0:
+                    vol_shrink_max = round(volume / max_vol, 2)
+                    
+                    sql = "select id from volume where code=%s and date=%s"
+                    param = (code, date)
+                    cursor.execute(sql, param)
+                    exists = cursor.fetchone()
+                    
+                    if exists:
+                        sql = "update volume set vol_shrink_max=%s where code=%s and date=%s"
+                    else:
+                        sql = "insert into volume(vol_shrink_max, code, date) volues(%s, %s, %s)"
+                        
+                    param = (vol_shrink_max, code, date)
                     cursor.execute(sql, param)
                     conn.commit()
-                    
-        # 每日涨跌幅入库结束
-        now = time.time()
-        sql = "insert into action_log(action_id, time) values(%s, %s)"
-        param = (19, now)
-        cursor.execute(sql, param)
-        conn.commit()
-        
-    cursor.close()
-    conn.close()
     
-    print 'up_down end: ', datetime.datetime.now()
+    print 'volume end: ', datetime.datetime.now()
+    

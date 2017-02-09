@@ -24,8 +24,16 @@ class DetailController extends Controller {
             }
 
             // 添加新记录
-            $result = M('focus_pool')->data($data)->add();
-            if($result) {
+            $id = M('focus_pool')->data($data)->add();
+            // 如果成本价未填写则以当日收盘价为准
+            if(empty($cost_price) && !empty($date)) {
+                $map['date'] = $date;
+                $map['code'] = $code;
+                $getCostPrice = M('k_data')->where($map)->getField('close');
+
+                M('focus_pool')->where("id=$id")->setField('cost_price', $getCostPrice);
+            }
+            if($id) {
                 $this->ajaxReturn(array('status' => 1, 'msg' => '操作成功！'));
             } else {
                 $this->ajaxReturn(array('status' => 0, 'msg' => '操作失败！'));

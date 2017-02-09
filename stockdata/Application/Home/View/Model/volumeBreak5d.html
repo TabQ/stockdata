@@ -11,7 +11,7 @@
                 <div class="tables">
                     <h4>成交量突破5d</h4>
                     <table class="table table-bordered" style="font-size: 14px;">
-                        <thead>
+                        <thead style="font-size: 10px;">
                         <tr>
                             <th>Choose</th>
                             <th>Name</th>
@@ -19,8 +19,9 @@
                             <th>Code</th>
                             <th style="cursor:pointer;color:#67D3E0;"><span>Man_date&nbsp;</span><span><if condition="$Think.get.sort eq 'Man_date'"><if condition="$Think.get.desc eq 1">↓<else />↑</if></if></span></th>
                             <th>Cost_price</th>
-                            <th style="cursor:pointer;color:#67D3E0;"><span>V2ma5&nbsp;</span><span><if condition="$Think.get.sort eq 'V2ma5'"><if condition="$Think.get.desc eq 1">↓<else />↑</if></if></span></th>
-                            <th style="cursor:pointer;color:#67D3E0;"><span>V2ma20&nbsp;</span><span><if condition="$Think.get.sort eq 'V2ma20'"><if condition="$Think.get.desc eq 1">↓<else />↑</if></if></span></th>
+                            <th style="cursor:pointer;color:#67D3E0;"><span>Vol_break_5d&nbsp;</span><span><if condition="$Think.get.sort eq 'Vol_break_5d'"><if condition="$Think.get.desc eq 1">↓<else />↑</if></if></span></th>
+                            <th style="cursor:pointer;color:#67D3E0;"><span>Vol_break_10d&nbsp;</span><span><if condition="$Think.get.sort eq 'Vol_break_10d'"><if condition="$Think.get.desc eq 1">↓<else />↑</if></if></span></th>
+                            <th style="cursor:pointer;color:#67D3E0;"><span>Vol_break_20d&nbsp;</span><span><if condition="$Think.get.sort eq 'Vol_break_20d'"><if condition="$Think.get.desc eq 1">↓<else />↑</if></if></span></th>
                             <th style="cursor:pointer;color:#67D3E0;"><span>P_change&nbsp;</span><span><if condition="$Think.get.sort eq 'P_change'"><if condition="$Think.get.desc eq 1">↓<else />↑</if></if></span></th>
                             <th style="cursor:pointer;color:#67D3E0;"><span>Percent&nbsp;</span><span><if condition="$Think.get.sort eq 'Percent'"><if condition="$Think.get.desc eq 1">↓<else />↑</if></if></span></th>
                             <th style="cursor:pointer;color:#67D3E0;"><span>Cur_per&nbsp;</span><span><if condition="$Think.get.sort eq 'Cur_per'"><if condition="$Think.get.desc eq 1">↓<else />↑</if></if></span></th>
@@ -42,8 +43,9 @@
                                 <td><a href="{:U('Detail/index',array('code'=>$vo['code']))}">{$vo.code}</a></td>
                                 <td>{$vo.man_date}</td>
                                 <td>{$vo.cost_price}</td>
-                                <td>{$vo.v2ma5|round=###,2}</td>
-                                <td>{$vo.v2ma20|round=###,2}</td>
+                                <td>{$vo.vol_break_5d|round=###,2}</td>
+                                <td>{$vo.vol_break_10d|round=###,2}</td>
+                                <td>{$vo.vol_break_20d|round=###,2}</td>
                                 <td <if condition="$vo.p_change egt 3">style="color: red"</if>>{$vo.p_change|round=###,2}%</td>
                                 <td>{$vo.percent|round=###,2}</td>
                                 <td>{$vo.cur_per|round=###,2}</td>

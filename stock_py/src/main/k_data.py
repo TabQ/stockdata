@@ -21,31 +21,36 @@ sql = "CREATE TABLE `k_data` (\
    `id` int(10) unsigned NOT NULL AUTO_INCREMENT,\
    `code` varchar(10) NOT NULL DEFAULT '',\
    `date` char(10) NOT NULL DEFAULT '',\
+   `type` char(1) NOT NULL DEFAULT 'S',\
    `open` double NOT NULL DEFAULT '0',\
    `high` double NOT NULL DEFAULT '0',\
    `low` double NOT NULL DEFAULT '0',\
    `close` double NOT NULL DEFAULT '0',\
    `volume` double NOT NULL DEFAULT '0',\
    PRIMARY KEY (`id`),\
-   UNIQUE KEY `code_date` (`code`,`date`)\
+   UNIQUE KEY `code_date_type` (`code`,`date`,`type`)\
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;"
 cursor.execute(sql)
 
-sql = "select code from stocks_info"
+sql = "select code, type from stocks_info"
 
 cursor.execute(sql)
 results = cursor.fetchall()
 
 for row in results:
     code = row[0]
+    type = row[1]
     
     try:
-        df = ts.get_k_data(code)
+        if type == 'I':
+            df = ts.get_k_data(code, index=True)
+        else:
+            df = ts.get_k_data(code)
         if df is not None:
             for id in df.index:
                 temp = df.ix[id]
-                sql = "insert into k_data(code, date, open, high, low, close, volume) values(%s,%s,%s,%s,%s,%s,%s)"
-                param = (temp['code'],temp['date'],temp['open'],temp['high'],temp['low'],temp['close'],temp['volume'])
+                sql = "insert into k_data(code, date, open, high, low, close, volume, type) values(%s,%s,%s,%s,%s,%s,%s,%s)"
+                param = (temp['code'],temp['date'],temp['open'],temp['high'],temp['low'],temp['close'],temp['volume'],type)
                 cursor.execute(sql, param)
                 conn.commit()
     except:

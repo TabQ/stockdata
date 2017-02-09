@@ -9,7 +9,7 @@
             </div>
             <div class="panel panel-widget">
                 <div class="tables">
-                    <h4>成交量突破20d</h4>
+                    <h4>成交量突破10d</h4>
                     <table class="table table-bordered" style="font-size: 14px;">
                         <thead style="font-size: 10px;">
                         <tr>
@@ -67,7 +67,7 @@
                                 var desc = $(this).children(':eq(1)').text();
                                 var sort = $.trim($(this).children(':eq(0)').text());
 
-                                var params = 'volumeBreak20d?sort=' + sort;
+                                var params = 'volumeBreak5d?sort=' + sort;
                                 if(desc == '' || desc == '↑') {
                                     params += '&desc=1';
                                 } else {

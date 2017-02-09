@@ -6,9 +6,13 @@ from statistics import *
 super_wave()
 super_wave_init()
  
-volume_break()
 ene()
  
-stocks_extends()
+handle_max_ma_vol()
+handle_ma()
+
+volume()
+volume_break()
+
+p_change()
 focus_pool_rate()
-up_down()
