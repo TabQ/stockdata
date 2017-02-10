@@ -211,19 +211,19 @@ def p_change(start = str(date.today()), end = str(date.today())):
     sql = "select code,type from stocks_info"
     
     cursor.execute(sql)
-    results = cursor.fetchall()
+    codes_results = cursor.fetchall()
     
-    for row in results:
-        code = row[0]
-        type = row[1]
+    for code_row in codes_results:
+        code = code_row[0]
+        type = code_row[1]
     
         sql = "select calendarDate from trade_cal where calendarDate>=%s and calendarDate<=%s and isOpen=1"
         param = (start, end)
         cursor.execute(sql, param)
-        results = cursor.fetchall()
+        cal_results = cursor.fetchall()
         
-        for row in results:
-            date = row[0]
+        for cal_row in cal_results:
+            date = cal_row[0]
             
             sql = "select close, date from k_data where code=%s and type=%s and date<=%s order by date desc limit 2"
             param = (code, type, date)
@@ -266,6 +266,61 @@ def p_change(start = str(date.today()), end = str(date.today())):
     conn.close()
     
     print 'p_change end: ', datetime.datetime.now()
+    
+# 计算当前收盘价与历史最高收盘价之比
+def p2max(start = str(date.today()), end = str(date.today())):
+    print 'p2max start: ', datetime.datetime.now()
+    
+    conn = MySQLdb.connect(host="localhost", user="root", passwd="root", db="stock", charset="utf8")
+    cursor = conn.cursor()
+    
+    sql = "select code,type from stocks_info"
+    
+    cursor.execute(sql)
+    codes_results = cursor.fetchall()
+    
+    for code_row in codes_results:
+        code = code_row[0]
+        type = code_row[1]
+        
+        sql = "select calendarDate from trade_cal where calendarDate>=%s and calendarDate<=%s and isOpen=1"
+        param = (start, end)
+        cursor.execute(sql, param)
+        cal_results = cursor.fetchall()
+        
+        for cal_row in cal_results:
+            date = cal_row[0]
+            
+            sql = "select close, max_price from k_data as k, stocks_summit as s where k.code = s.code and k.type = s.type and k.code=%s and k.date=%s and k.type=%s"
+            param = (code, date, type)
+            cursor.execute(sql, param)
+            result = cursor.fetchone()
+            
+            if result:
+                close = result[0]
+                max_price = result[1]
+                
+                if max_price != 0:
+                    p2max = round(float(close) / float(max_price), 4) * 100
+                    
+                    sql = "select id from stocks_extends where code=%s and date=%s and type=%s"
+                    param = (code, date, type)
+                    cursor.execute(sql, param)
+                    exists = cursor.fetchone()
+                    
+                    if exists:
+                        sql = "update stocks_extends set p2max=%s where code=%s and date=%s and type=%s"
+                    else:
+                        sql = "insert into stocks_extends(p2max, code, date, type) values(%s, %s, %s, %s)"
+                        
+                    param = (p2max, code, date, type)
+                    cursor.execute(sql, param)
+                    conn.commit()
+                    
+    cursor.close()
+    conn.close()
+    
+    print 'p2max end: ', datetime.datetime.now()
     
 # 计算关注池收益率
 def focus_pool_rate(today = str(date.today())):
@@ -432,30 +487,29 @@ def volume(start = str(date.today()), end = str(date.today())):
                 max_vol60   = extends_result[8]
                 max_vol120  = extends_result[9]
                 
-                vol_break_5d = vol_break_10d = vol_break_20d = 0
-                vol_shrink_ma_5d = vol_shrink_ma_10d = vol_shrink_ma_20d = vol_shrink_ma_60d = vol_shrink_ma_120d = 0
-                vol_shrink_max_5d = vol_shrink_max_10d = vol_shrink_max_20d = vol_shrink_max_60d = vol_shrink_max_120d = 0
+                v2ma5d = v2ma10d = v2ma20d = v2ma60d = v2ma120d = 0
+                v2max = v2max5d = v2max10d = v2max20d = v2max60d = v2max120d = 0
                 
                 if v_ma5 != 0:
-                    vol_break_5d = vol_shrink_ma_5d = round(volume / v_ma5, 2)
+                    v2ma5d = round(volume / v_ma5, 2)
                 if v_ma10 != 0:
-                    vol_break_10d = vol_shrink_ma_10d = round(volume / v_ma10, 2)
+                    v2ma10d = round(volume / v_ma10, 2)
                 if v_ma20 != 0:
-                    vol_break_20d = vol_shrink_ma_20d = round(volume / v_ma20, 2)
+                    v2ma20d = round(volume / v_ma20, 2)
                 if v_ma60 != 0:
-                    vol_shrink_ma_60d = round(volume / v_ma60, 2)
+                    v2ma60d = round(volume / v_ma60, 2)
                 if v_ma120 != 0:
-                    vol_shrink_ma_120d = round(volume / v_ma120, 2)
+                    v2ma120d = round(volume / v_ma120, 2)
                 if max_vol5 != 0:
-                    vol_shrink_max_5d = round(volume / max_vol5, 2)
+                    v2max5d = round(volume / max_vol5, 2)
                 if max_vol10 != 0:
-                    vol_shrink_max_10d = round(volume / max_vol10, 2)
+                    v2max10d = round(volume / max_vol10, 2)
                 if max_vol20 != 0:
-                    vol_shrink_max_20d = round(volume / max_vol20, 2)
+                    v2max20d = round(volume / max_vol20, 2)
                 if max_vol60 != 0:
-                    vol_shrink_max_60d = round(volume / max_vol60, 2)
+                    v2max60d = round(volume / max_vol60, 2)
                 if max_vol120 != 0:
-                    vol_shrink_max_120d = round(volume / max_vol120, 2)
+                    v2max120d = round(volume / max_vol120, 2)
                     
                 sql = "select id from volume where code=%s and date=%s"
                 param = (code, date)
@@ -463,16 +517,11 @@ def volume(start = str(date.today()), end = str(date.today())):
                 exists = cursor.fetchone()
                 
                 if exists:
-                    sql = '''update volume set vol_break_5d=%s, vol_break_10d=%s, vol_break_20d=%s, vol_shrink_max_5d=%s, vol_shrink_max_10d=%s, vol_shrink_max_20d=%s, 
-                    vol_shrink_max_60d=%s, vol_shrink_max_120d=%s, vol_shrink_ma_5d=%s, vol_shrink_ma_10d=%s, vol_shrink_ma_20d=%s, vol_shrink_ma_60d=%s, vol_shrink_ma_120d=%s 
-                    where code=%s and date=%s'''
+                    sql = '''update volume set v2ma5d=%s, v2ma10d=%s, v2ma20d=%s, v2ma60d=%s, v2ma120d=%s, v2max5d=%s, v2max10d=%s, v2max20d=%s, v2max60d=%s, v2max120d=%s where code=%s and date=%s'''
                 else:
-                    sql = '''insert into volume(vol_break_5d, vol_break_10d, vol_break_20d, vol_shrink_max_5d, vol_shrink_max_10d, vol_shrink_max_20d, 
-                    vol_shrink_max_60d, vol_shrink_max_120d, vol_shrink_ma_5d, vol_shrink_ma_10d, vol_shrink_ma_20d, vol_shrink_ma_60d, vol_shrink_ma_120d, code, date) 
-                    values(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'''
+                    sql = '''insert into volume(v2ma5d, v2ma10d, v2ma20d, v2ma60d, v2ma120d, v2max5d, v2max10d, v2max20d, v2max60d, v2max120d, code, date) values(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'''
                     
-                param = (vol_break_5d, vol_break_10d, vol_break_20d, vol_shrink_max_5d, vol_shrink_max_10d, vol_shrink_max_20d, vol_shrink_max_60d, vol_shrink_max_120d,\
-                         vol_shrink_ma_5d, vol_shrink_ma_10d, vol_shrink_ma_20d, vol_shrink_ma_60d, vol_shrink_ma_120d, code, date)
+                param = (v2ma5d, v2ma10d, v2ma20d, v2ma60d, v2ma120d, v2max5d, v2max10d, v2max20d, v2max60d, v2max120d, code, date)
                 cursor.execute(sql, param)
                 conn.commit()
             
@@ -485,7 +534,7 @@ def volume(start = str(date.today()), end = str(date.today())):
                 max_vol = max_vol_result[0]
                 
                 if max_vol != 0:
-                    vol_shrink_max = round(volume / max_vol, 2)
+                    v2max = round(volume / max_vol, 2)
                     
                     sql = "select id from volume where code=%s and date=%s"
                     param = (code, date)
@@ -493,11 +542,11 @@ def volume(start = str(date.today()), end = str(date.today())):
                     exists = cursor.fetchone()
                     
                     if exists:
-                        sql = "update volume set vol_shrink_max=%s where code=%s and date=%s"
+                        sql = "update volume set v2max=%s where code=%s and date=%s"
                     else:
-                        sql = "insert into volume(vol_shrink_max, code, date) volues(%s, %s, %s)"
+                        sql = "insert into volume(v2max, code, date) volues(%s, %s, %s)"
                         
-                    param = (vol_shrink_max, code, date)
+                    param = (v2max, code, date)
                     cursor.execute(sql, param)
                     conn.commit()
     

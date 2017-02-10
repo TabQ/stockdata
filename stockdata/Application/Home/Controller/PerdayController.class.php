@@ -51,7 +51,7 @@ class PerdayController extends Controller {
             ->join("left join stocks_info on stocks_extends.code = stocks_info.code and stocks_extends.type='S'")
             ->join('left join stocks_report on stocks_extends.code = stocks_report.code')
             ->join('left join stocks_growth on stocks_extends.code = stocks_growth.code')
-            ->field('name, stocks_extends.code, stocks_extends.date, p_change, vol_break_5d, vol_break_10d, vol_break_20d, close, industry, pe, timetomarket, stocks_info.bvps, profits_yoy, mbrg')
+            ->field('name, stocks_extends.code, stocks_extends.date, p_change, v2ma5d, v2ma10d, v2ma20d, close, industry, pe, timetomarket, stocks_info.bvps, profits_yoy, mbrg')
             ->order($order)
             ->limit($page->firstRow.','.$page->listRows)
             ->select();
@@ -103,7 +103,7 @@ class PerdayController extends Controller {
             ->join("left join stocks_info on stocks_extends.code = stocks_info.code and stocks_extends.type='S'")
             ->join('left join stocks_report on stocks_extends.code = stocks_report.code')
             ->join('left join stocks_growth on stocks_extends.code = stocks_growth.code')
-            ->field('name, stocks_extends.code, stocks_extends.date, p_change, vol_break_5d, vol_break_10d, vol_break_20d, close, industry, pe, timetomarket, stocks_info.bvps, profits_yoy, mbrg')
+            ->field('name, stocks_extends.code, stocks_extends.date, p_change, v2ma5d, v2ma10d, v2ma20d, close, industry, pe, timetomarket, stocks_info.bvps, profits_yoy, mbrg')
             ->order($order)
             ->limit($page->firstRow.','.$page->listRows)
             ->select();

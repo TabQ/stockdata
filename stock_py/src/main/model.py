@@ -24,7 +24,7 @@ def volume_break(start = str(date.today()), end = str(date.today())):
     for cal_row in cal_results:
         date = cal_row[0]
         
-        sql = "select v.code,close,timeToMarket,vol_break_5d,vol_break_10d,vol_break_20d from volume as v, stocks_info as s, k_data as k \
+        sql = "select v.code,close,timeToMarket,v2ma5d,v2ma10d,v2ma20d from volume as v, stocks_info as s, k_data as k \
         where s.type='S' and s.code=v.code and v.code=k.code and v.date=k.date and v.date=%s"
         param = (date)
         cursor.execute(sql, param)

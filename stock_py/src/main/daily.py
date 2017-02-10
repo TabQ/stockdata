@@ -10,9 +10,11 @@ ene()
  
 handle_max_ma_vol()
 handle_ma()
-
+ 
 volume()
 volume_break()
-
+ 
 p_change()
+p2max()
+
 focus_pool_rate()

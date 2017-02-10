@@ -14,9 +14,9 @@ class ModelController extends Controller {
             'eneUpper' => 2,
             'eneLower' => 3,
             'closeEneLower' => 4,
-            'volBreak5d' => 5,
-            'volBreak10d' => 6,
-            'volBreak20d' => 7,
+            'volumeBreak5d' => 5,
+            'volumeBreak10d' => 6,
+            'volumeBreak20d' => 7,
             'volShrinkMax' => 8,
             'volShrinkMax5d' => 9,
             'volShrinkMax10d' => 10,
@@ -46,14 +46,13 @@ class ModelController extends Controller {
         $page = new \Think\Page($count, PAGE_COUNT);
         $show = $page->show();
 
-        $order = !isset($sort) ? 'vol_shrink_max' : ($desc == 1 ? "$sort desc" : "$sort");
+        $order = !isset($sort) ? 'v2max' : ($desc == 1 ? "$sort desc" : "$sort");
 
         $list = M('volume')
             ->where($map)
             ->join("left join stocks_extends on volume.code = stocks_extends.code and volume.date = stocks_extends.date and stocks_extends.type='S'")
             ->join("left join stocks_info on volume.code = stocks_info.code and stocks_info.type='S'")
-            ->field('volume.code, volume.date, name, p_change, vol_shrink_max, vol_shrink_max_5d, vol_shrink_max_10d, vol_shrink_max_20d, vol_shrink_max_60d, vol_shrink_max_120d,
-            vol_shrink_ma_5d, vol_shrink_ma_10d, vol_shrink_ma_20d, vol_shrink_ma_60d, vol_shrink_ma_120d')
+            ->field('volume.code, volume.date, name, p_change, p2max, v2max, v2max5d, v2max10d, v2max20d, v2max60d, v2max120d, v2ma5d, v2ma10d, v2ma20d, v2ma60d, v2ma120d')
             ->order($order)
             ->limit($page->firstRow.','.$page->listRows)
             ->select();
@@ -65,7 +64,52 @@ class ModelController extends Controller {
         $this->display('Model:volumeShrink');
     }
 
+    private function volumeBreak($index) {
+        $params = I('get.');
+        extract($params);
+
+        $map['type_id'] = $this->focusType["$index"];
+
+        $count = M('focus_pool')->where($map)->count();
+        $page = new \Think\Page($count, PAGE_COUNT);
+        $show = $page->show();
+
+        $order = !isset($sort) ? 'date desc' : ($desc == 1 ? "$sort desc" : "$sort");
+
+        $list = M('focus_pool')
+            ->where($map)
+            ->join("left join stocks_extends on focus_pool.code = stocks_extends.code and focus_pool.date = stocks_extends.date and stocks_extends.type='S'")
+            ->join("left join k_data on focus_pool.code = k_data.code and focus_pool.date = k_data.date and k_data.type='S'")
+            ->join('left join volume on focus_pool.code = volume.code and focus_pool.date = volume.date')
+            ->join('left join super_wave on focus_pool.code = super_wave.code')
+            ->join("left join stocks_info on focus_pool.code = stocks_info.code and stocks_info.type='S'")
+            ->join('left join stocks_report on focus_pool.code = stocks_report.code')
+            ->join('left join stocks_growth on focus_pool.code = stocks_growth.code')
+            ->field('focus_pool.id,name,focus_pool.date,focus_pool.code,focus_pool.man_date,focus_pool.cost_price,v2ma5d,v2ma10d,v2ma20d,p_change,percent,cur_per,stocks_info.bvps,pe,profits_yoy,mbrg,close,timetomarket,focus_pool.yield_rate')
+            ->order($order)
+            ->limit($page->firstRow.','.$page->listRows)
+            ->select();
+
+        $this->assign('today', $this->today);
+        $this->assign('list', $list);
+        $this->assign('page', $show);
+
+        $this->display("Model:$index");
+    }
+
     public function volumeBreak5d() {
+        $this->volumeBreak('volumeBreak5d');
+    }
+
+    public function volumeBreak10d() {
+        $this->volumeBreak('volumeBreak10d');
+    }
+
+    public function volumeBreak20d() {
+        $this->volumeBreak('volumeBreak20d');
+    }
+
+    public function _volumeBreak5d() {
         $params = I('get.');
         extract($params);
 
@@ -86,7 +130,7 @@ class ModelController extends Controller {
             ->join("left join stocks_info on focus_pool.code = stocks_info.code and stocks_info.type='S'")
             ->join('left join stocks_report on focus_pool.code = stocks_report.code')
             ->join('left join stocks_growth on focus_pool.code = stocks_growth.code')
-            ->field('focus_pool.id,name,focus_pool.date,focus_pool.code,focus_pool.man_date,focus_pool.cost_price,vol_break_5d,vol_break_10d,vol_break_20d,p_change,percent,cur_per,stocks_info.bvps,pe,profits_yoy,mbrg,close,timetomarket,focus_pool.yield_rate')
+            ->field('focus_pool.id,name,focus_pool.date,focus_pool.code,focus_pool.man_date,focus_pool.cost_price,v2ma5d,v2ma10d,v2ma20d,p_change,percent,cur_per,stocks_info.bvps,pe,profits_yoy,mbrg,close,timetomarket,focus_pool.yield_rate')
             ->order($order)
             ->limit($page->firstRow.','.$page->listRows)
             ->select();
@@ -98,7 +142,7 @@ class ModelController extends Controller {
         $this->display('Model:volumeBreak5d');
     }
 
-    public function volumeBreak10d() {
+    public function _volumeBreak10d() {
         $params = I('get.');
         extract($params);
 
@@ -131,7 +175,7 @@ class ModelController extends Controller {
         $this->display('Model:volumeBreak10d');
     }
 
-    public function volumeBreak20d() {
+    public function _volumeBreak20d() {
         $params = I('get.');
         extract($params);
 
@@ -164,7 +208,45 @@ class ModelController extends Controller {
         $this->display('Model:volumeBreak20d');
     }
 
+    private function eneUpperOrLower($index) {
+        $params = I('get.');
+        extract($params);
+
+        $map['type_id'] = $this->focusType["$index"];
+
+        $count = M('focus_pool')->where($map)->count();
+        $page = new \Think\Page($count, PAGE_COUNT);
+        $show = $page->show();
+
+        $order = !isset($sort) ? 'date desc' : ($desc == 1 ? "$sort desc" : "$sort");
+
+        $list = M('focus_pool')
+            ->where($map)
+            ->join("left join k_data on focus_pool.code = k_data.code and focus_pool.date = k_data.date and k_data.type='S'")
+            ->join("left join stocks_info on focus_pool.code = stocks_info.code and stocks_info.type='S'")
+            ->join('left join stocks_report on focus_pool.code = stocks_report.code')
+            ->join('left join stocks_growth on focus_pool.code = stocks_growth.code')
+            ->field('focus_pool.id,name,focus_pool.date,focus_pool.code,focus_pool.man_date,focus_pool.cost_price,stocks_info.bvps,pe,profits_yoy,mbrg,close,timetomarket,focus_pool.yield_rate')
+            ->order($order)
+            ->limit($page->firstRow.','.$page->listRows)
+            ->select();
+
+        $this->assign('today', $this->today);
+        $this->assign('list', $list);
+        $this->assign('page', $show);
+
+        $this->display("Model:$index");
+    }
+
     public function eneUpper() {
+        $this->eneUpperOrLower('eneUpper');
+    }
+
+    public function eneLower() {
+        $this->eneUpperOrLower('eneLower');
+    }
+
+    public function _eneUpper() {
         $params = I('get.');
         extract($params);
 
@@ -194,7 +276,7 @@ class ModelController extends Controller {
         $this->display('Model:eneUpper');
     }
 
-    public function eneLower() {
+    public function _eneLower() {
         $params = I('get.');
         extract($params);
 
