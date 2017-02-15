@@ -38,7 +38,9 @@ class PerdayController extends Controller {
             }
         }
 
-        $count = M('stocks_extends')->where($map)->count();
+        $diffDate = date('Y-m-d',strtotime($lastDay) - 3*30*86400);
+        $where['timeToMarket'] = array('elt', $diffDate);
+        $count = M('stocks_extends')->where($map)->join("left join stocks_info on stocks_extends.code = stocks_info.code and stocks_extends.type='S'")->where($where)->count();
         $page = new \Think\Page($count, PAGE_COUNT);
         $show = $page->show();
 
@@ -49,6 +51,7 @@ class PerdayController extends Controller {
             ->join("left join volume on stocks_extends.code = volume.code and stocks_extends.date = volume.date and stocks_extends.type='S'")
             ->join("left join k_data on stocks_extends.code = k_data.code and stocks_extends.date = k_data.date and stocks_extends.type='S'")
             ->join("left join stocks_info on stocks_extends.code = stocks_info.code and stocks_extends.type='S'")
+            ->where($where)
             ->join('left join stocks_report on stocks_extends.code = stocks_report.code')
             ->join('left join stocks_growth on stocks_extends.code = stocks_growth.code')
             ->field('name, stocks_extends.code, stocks_extends.date, p_change, v2ma5d, v2ma10d, v2ma20d, close, industry, pe, timetomarket, stocks_info.bvps, profits_yoy, mbrg')
@@ -90,7 +93,9 @@ class PerdayController extends Controller {
             }
         }
 
-        $count = M('stocks_extends')->where($map)->count();
+        $diffDate = date('Y-m-d',strtotime($lastDay) - 3*30*86400);
+        $where['timeToMarket'] = array('elt', $diffDate);
+        $count = M('stocks_extends')->where($map)->join("left join stocks_info on stocks_extends.code = stocks_info.code and stocks_extends.type='S'")->where($where)->count();
         $page = new \Think\Page($count, PAGE_COUNT);
         $show = $page->show();
 
@@ -101,6 +106,7 @@ class PerdayController extends Controller {
             ->join("left join volume on stocks_extends.code = volume.code and stocks_extends.date = volume.date and stocks_extends.type='S'")
             ->join("left join k_data on stocks_extends.code = k_data.code and stocks_extends.date = k_data.date and stocks_extends.type='S'")
             ->join("left join stocks_info on stocks_extends.code = stocks_info.code and stocks_extends.type='S'")
+            ->where($where)
             ->join('left join stocks_report on stocks_extends.code = stocks_report.code')
             ->join('left join stocks_growth on stocks_extends.code = stocks_growth.code')
             ->field('name, stocks_extends.code, stocks_extends.date, p_change, v2ma5d, v2ma10d, v2ma20d, close, industry, pe, timetomarket, stocks_info.bvps, profits_yoy, mbrg')
