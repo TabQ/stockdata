@@ -246,7 +246,7 @@ def p_change(start = str(date.today()), end = str(date.today())):
                 continue
             else:
                 p_change = (close_list[0] - close_list[1]) * 100.00 / close_list[1]
-                p_change = round(p_change, 2)
+                p_change = round(p_change, 0)
             
             sql = "select id from stocks_extends where code=%s and date=%s and type=%s"
             param = (code, date, type)
