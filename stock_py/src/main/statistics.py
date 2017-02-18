@@ -246,7 +246,7 @@ def p_change(start = str(date.today()), end = str(date.today())):
                 continue
             else:
                 p_change = (close_list[0] - close_list[1]) * 100.00 / close_list[1]
-                p_change = round(p_change, 0)
+                p_change = round(p_change, 2)
             
             sql = "select id from stocks_extends where code=%s and date=%s and type=%s"
             param = (code, date, type)
@@ -301,7 +301,7 @@ def p2max(start = str(date.today()), end = str(date.today())):
                 max_price = result[1]
                 
                 if max_price != 0:
-                    p2max = round(float(close) / float(max_price), 4) * 100
+                    p2max = round(float(close) / float(max_price), 2) * 100
                     
                     sql = "select id from stocks_extends where code=%s and date=%s and type=%s"
                     param = (code, date, type)
