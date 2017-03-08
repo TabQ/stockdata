@@ -32,9 +32,9 @@
                             <th style="cursor:pointer;color:#67D3E0;"><span>Date&nbsp;</span><span><if condition="$Think.get.sort eq 'Date'"><if condition="$Think.get.desc eq 1">↓<else />↑</if></if></span></th>
                             <th style="cursor:pointer;color:#67D3E0;"><span>Code&nbsp;</span><span><if condition="$Think.get.sort eq 'Code'"><if condition="$Think.get.desc eq 1">↓<else />↑</if></if></span></th>
                             <th>Industry</th>
-                            <th style="cursor:pointer;color:#67D3E0;"><span>Vol_break_5d&nbsp;</span><span><if condition="$Think.get.sort eq 'Vol_bread_5d'"><if condition="$Think.get.desc eq 1">↓<else />↑</if></if></span></th>
-                            <th style="cursor:pointer;color:#67D3E0;"><span>Vol_break_10d&nbsp;</span><span><if condition="$Think.get.sort eq 'Vol_break_10d'"><if condition="$Think.get.desc eq 1">↓<else />↑</if></if></span></th>
-                            <th style="cursor:pointer;color:#67D3E0;"><span>Vol_break_20d&nbsp;</span><span><if condition="$Think.get.sort eq 'Vol_break_20d'"><if condition="$Think.get.desc eq 1">↓<else />↑</if></if></span></th>
+                            <th style="cursor:pointer;color:#67D3E0;"><span>V2ma5d&nbsp;</span><span><if condition="$Think.get.sort eq 'V2ma5d'"><if condition="$Think.get.desc eq 1">↓<else />↑</if></if></span></th>
+                            <th style="cursor:pointer;color:#67D3E0;"><span>V2ma10d&nbsp;</span><span><if condition="$Think.get.sort eq 'V2ma10d'"><if condition="$Think.get.desc eq 1">↓<else />↑</if></if></span></th>
+                            <th style="cursor:pointer;color:#67D3E0;"><span>V2ma20d&nbsp;</span><span><if condition="$Think.get.sort eq 'V2ma20d'"><if condition="$Think.get.desc eq 1">↓<else />↑</if></if></span></th>
                             <th>Close</th>
                             <th>Bvps</th>
                             <th>Pe</th>
@@ -51,9 +51,9 @@
                                 <td>{$vo.date}</td>
                                 <td><a href="{:U('Detail/index',array('code'=>$vo['code']))}">{$vo.code}</a></td>
                                 <td>{$vo.industry}</td>
-                                <td>{$vo.vol_break_5d|round=###,2}</td>
-                                <td>{$vo.vol_break_10d|round=###,2}</td>
-                                <td>{$vo.vol_break_20d|round=###,2}</td>
+                                <td>{$vo.v2ma5d|round=###,2}</td>
+                                <td>{$vo.v2ma10d|round=###,2}</td>
+                                <td>{$vo.v2ma20d|round=###,2}</td>
                                 <td>{$vo.close}</td>
                                 <td>{$vo.bvps}</td>
                                 <td>{$vo.pe}</td>
