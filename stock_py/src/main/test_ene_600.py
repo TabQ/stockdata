@@ -12,14 +12,14 @@ def test_yield():
     conn = MySQLdb.connect(host="localhost", user="root", passwd="root", db="stock", charset="utf8")
     cursor = conn.cursor()
     
-    sql = "select calendarDate from trade_cal where (calendarDate >='2016-01-28' and calendarDate <= '2017-01-17') and isOpen=1"
+    sql = "select calendarDate from trade_cal where (calendarDate >='2017-01-01' and calendarDate <= '2017-02-18') and isOpen=1"
     cursor.execute(sql)
     start_results = cursor.fetchall()
     
     for start_row in start_results:
         start_date = start_row[0]
         
-        sql = "select code, cost_price from focus_pool where type_id=4 and date=%s"
+        sql = "select code, cost_price from focus_pool where type_id=3 and date=%s"
         param = (start_date)
         cursor.execute(sql, param)
         results = cursor.fetchall()

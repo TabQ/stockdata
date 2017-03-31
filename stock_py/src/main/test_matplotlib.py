@@ -17,9 +17,11 @@ def test_ene_yield(type = 'A'):
     conn = MySQLdb.connect(host="localhost", user="root", passwd="root", db="stock", charset="utf8")
     cursor = conn.cursor()
     
-    sql = "select calendarDate from trade_cal where (calendarDate >='2016-01-28' and calendarDate <= '2017-01-17') and isOpen=1"
+    sql = "select calendarDate from trade_cal where (calendarDate >='2017-01-01' and calendarDate <= '2017-02-15') and isOpen=1"
     cursor.execute(sql)
     x_results = cursor.fetchall()
+    
+    cat_map = {'A':u'所有', 'H':u'沪市', 'S':u'深市', 'Z':u'中小板', 'C':u'创业板'}
     
     for x_row in x_results:
         cal_date = x_row[0]
@@ -31,6 +33,8 @@ def test_ene_yield(type = 'A'):
             sql = "select start_date, end_date, sum_yield from test_yield where start_date='"+cal_date+"' and type='H'"
         elif type == 'S':
             sql = "select start_date, end_date, sum_yield from test_yield where start_date='"+cal_date+"' and type='S'"
+        elif type == 'Z':
+            sql = "select start_date, end_date, sum_yield from test_yield where start_date='"+cal_date+"' and type='Z'"
         elif type == 'C':
             sql = "select start_date, end_date, sum_yield from test_yield where start_date='"+cal_date+"' and type='C'"
         cursor.execute(sql)
@@ -49,11 +53,16 @@ def test_ene_yield(type = 'A'):
             
     fig = plt.figure()
     ax = fig.add_subplot(1,1,1)
-    ax.plot(x_end_axes, y_axes)
-    ax.xaxis.set_major_locator(mdate.DayLocator(bymonthday=range(1,32), interval=15))
+    ax.set_title(type)
+    ax.plot(x_start_axes, y_axes)
+    ax.xaxis.set_major_locator(mdate.DayLocator(bymonthday=range(1,32), interval=1))
     ax.xaxis.set_major_formatter(mdate.DateFormatter("%Y-%m-%d"))
     fig.autofmt_xdate()
     
     plt.show()
-    
+
+test_ene_yield('A')
+test_ene_yield('H')
+test_ene_yield('S')
+test_ene_yield('Z')    
 test_ene_yield('C')
