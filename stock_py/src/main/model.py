@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import division
 import tushare as ts
 import MySQLdb
 from datetime import date
@@ -6,7 +7,8 @@ import datetime
 import time
 import sys
 
-from common import diff_between_two_days, ma_date
+from common import diff_between_two_days, ma_date, hld
+from functions import ma, ema
 
 def volume_break(start = str(date.today()), end = str(date.today())):
     focus_type_map = {'vol_break_5d':5, 'vol_break_10d':6, 'vol_break_20d':7}
@@ -159,3 +161,80 @@ def ene(start = str(date.today()), end = str(date.today())):
     conn.close()
     
     print 'ene end: ', datetime.datetime.now()
+    
+# 持股线距离（HLD）模型
+def handle_hld(start = str(date.today()), end = str(date.today())):
+    m = 10  # hld的移动平均线（ma）计算间隔
+    type_id = 19 # hld的focus_type id设为19
+    
+    print 'handle_hld start: ', datetime.datetime.now()
+    
+    conn = MySQLdb.connect(host="localhost", user="root", passwd="root", db="stock", charset="utf8")
+    cursor = conn.cursor()
+    
+    sql = "select calendarDate from trade_cal where calendarDate>=%s and calendarDate<=%s and isOpen=1"
+    param = (start, end)
+    cursor.execute(sql, param)
+    cal_results = cursor.fetchall()
+    
+    for cal_row in cal_results:
+        date = cal_row[0]
+        
+        sql = "select code from stocks_info where type='S'"
+        cursor.execute(sql)
+        si_results = cursor.fetchall()
+        
+        for si_row in si_results:
+            code = si_row[0]
+            
+            hld_value = hld(cursor, code, date)
+
+            if hld_value is not None:
+                sql = "insert into hld(code, date, hld) values(%s, %s, %s)"
+                param = (code, date, hld_value)
+                cursor.execute(sql, param)
+                conn.commit()
+                
+                sql = "select hld from hld where code=%s and date<=%s and hld is not null order by date desc limit %s"
+                param = (code, date, m)
+                cursor.execute(sql, param)
+                hld_results = cursor.fetchall()
+                
+                if len(hld_results) == m:
+                    hld_list = []
+                    for hld_row in hld_results:
+                        hld_list.append(hld_row[0])
+                        
+                    mahld = ma(hld_list)
+                    sql = "update hld set mahld=%s where code=%s and date=%s"
+                    param = (mahld, code, date)
+                    cursor.execute(sql, param)
+                    conn.commit()
+                    
+                    if hld_value >= mahld:
+                        sql = "select hld, mahld from hld where code=%s and date<%s and hld is not null and mahld is not null limit 1"
+                        param = (code, date)
+                        cursor.execute(sql, param)
+                        prior_hld_row = cursor.fetchone()
+                        
+                        if prior_hld_row:
+                            prior_hld = prior_hld_row[0]
+                            prior_mahld = prior_hld_row[1]
+                            
+                            # hld金叉入库(focus_pool)
+                            if prior_hld < prior_mahld:
+                                sql = "select close from k_data where code=%s and date=%s and type='S'"
+                                param = (code, date)
+                                cursor.execute(sql, param)
+                                close_row = cursor.fetchone()
+                                
+                                if close_row:
+                                    sql = "insert into focus_pool(code, date, cost_price, type_id, subtype_id) values(%s, %s, %s, %s, %s)"
+                                    param = (code, date, close_row[0], type_id, 1)
+                                    cursor.execute(sql, param)
+                                    conn.commit()
+    
+    cursor.close()
+    conn.close()
+    
+    print 'handle_hld end: ', datetime.datetime.now()

@@ -7,7 +7,7 @@ import time
 import traceback
 import sys
 
-from common import diff_between_two_days, ma_date, max_ma_vol_date, max_vol_price
+from common import diff_between_two_days, ma_date, max_ma_vol_date, max_vol_price, hld
 
 # 处理所有股票的最大成交量及最高收盘价
 def handle_max_vol_price():
@@ -549,6 +549,43 @@ def volume(start = str(date.today()), end = str(date.today())):
                     param = (v2max, code, date)
                     cursor.execute(sql, param)
                     conn.commit()
+                    
+    cursor.close()
+    conn.close()
     
     print 'volume end: ', datetime.datetime.now()
     
+# 计算持股线距离
+def count_hld(start = str(date.today()), end = str(date.today())):
+    print 'count_hld start: ', datetime.datetime.now()
+    
+    conn = MySQLdb.connect(host="localhost", user="root", passwd="root", db="stock", charset="utf8")
+    cursor = conn.cursor()
+    
+    sql = "select calendarDate from trade_cal where calendarDate>=%s and calendarDate<=%s and isOpen=1"
+    param = (start, end)
+    cursor.execute(sql, param)
+    cal_results = cursor.fetchall()
+    
+    for cal_row in cal_results:
+        date = cal_row[0]
+        
+        sql = "select code from stocks_info where type='S'"
+        cursor.execute(sql)
+        results = cursor.fetchall()
+        
+        for row in results:
+            code = row[0]
+            
+            hld_result = hld(cursor, code, date)
+            
+            if hld_result is not None:
+                sql = "insert into hld(code, date, hld) values(%s, %s, %s)"
+                param = (code, date, hld_result)
+                cursor.execute(sql, param)
+                conn.commit()
+                
+    cursor.close()
+    conn.close()
+    
+    print 'count_hld end: ', datetime.datetime.now()
