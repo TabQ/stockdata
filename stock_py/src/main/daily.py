@@ -3,18 +3,26 @@ from super_wave import *
 from model import *
 from statistics import *
 
-super_wave()
-super_wave_init()
+today = str(date.today())
+start = today
+end = today
+  
+# today = '2017-06-26'
+# start = '2017-06-23'
+# end = today
 
-ene()
+super_wave(today)
+super_wave_init(today)
 
-handle_max_ma_vol()
-handle_ma()
+ene(start, end)
 
-volume()
-volume_break()
+handle_max_ma_vol(start, end)
+handle_ma(start, end)
 
-p_change()
-p2max()
+volume(start, end)
+volume_break(start, end)
 
-focus_pool_rate()
+p_change(start, end)
+p2max(start, end)
+
+focus_pool_rate(today)

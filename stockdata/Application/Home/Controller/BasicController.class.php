@@ -46,6 +46,8 @@ class BasicController extends Controller {
 
         $map['date'] = array('eq', $lastDay);
 
+        $map['stocks_info.type'] = 'S';
+
         $count = M('stocks_info')
             ->where($map)
             ->join('k_data on k_data.code = stocks_info.code')
@@ -74,6 +76,8 @@ class BasicController extends Controller {
         $lastDay = $lastData['date'];
 
         $map['date'] = array('eq', $lastDay);
+
+        $map['stocks_info.type'] = 'S';
 
         $count = M('stocks_info')
             ->where($map)
