@@ -15,6 +15,7 @@ super_wave(today)
 super_wave_init(today)
 
 ene(start, end)
+handle_close_ene_lower(start, end)
 
 handle_max_ma_vol(start, end)
 handle_ma(start, end)

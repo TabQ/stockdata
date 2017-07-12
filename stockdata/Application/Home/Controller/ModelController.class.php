@@ -325,7 +325,7 @@ class ModelController extends Controller {
             ->join("left join stocks_info on focus_pool.code = stocks_info.code and stocks_info.type='S'")
             ->join('left join stocks_report on focus_pool.code = stocks_report.code')
             ->join('left join stocks_growth on focus_pool.code = stocks_growth.code')
-            ->field('focus_pool.id,name,focus_pool.date,focus_pool.code,focus_pool.man_date,focus_pool.cost_price,dist_per,stocks_info.bvps,pe,profits_yoy,mbrg,close,timetomarket,focus_pool.yield_rate')
+            ->field('focus_pool.id,name,focus_pool.date,focus_pool.code,focus_pool.man_date,focus_pool.cost_price,lower_dist_per,stocks_info.bvps,pe,profits_yoy,mbrg,close,timetomarket,focus_pool.yield_rate')
             ->order($order)
             ->limit($page->firstRow.','.$page->listRows)
             ->select();

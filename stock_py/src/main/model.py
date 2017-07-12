@@ -88,8 +88,6 @@ def ene(start = str(date.today()), end = str(date.today())):
         cursor.execute(sql, param)
         results = cursor.fetchall()
         
-        close_lower_list = []
-        
         for row in results:
             code = row[0]
             high = row[1]
@@ -101,59 +99,43 @@ def ene(start = str(date.today()), end = str(date.today())):
                 continue
             
             # 计算ma10
-            ma10 = ma_date(cursor, code, 'S', date, 10)
+            ma10 = ma_date(cursor, code, 'S', date, N)
             
             upper = (1 + M1/100) * ma10
             lower = (1 - M2/100) * ma10
             ene = (upper + lower) / 2
+            dist = upper - lower    # ene轨道距离
             
+            # 计算最高价与ene上轨的距离与轨道间距的百分比
+            upper_dist_per = round((high - upper) / dist, 2)            
             if high >= upper:
                 sql = "insert into focus_pool(code, date, type_id, subtype_id, cost_price) values(%s,%s,%s,%s,%s)"
                 param = (code, date, 2, 1, close)
                      
                 cursor.execute(sql, param)
                 conn.commit()
-                
+            
+            # 计算最低价与ene下轨的距离与轨道间距的百分比
+            lower_dist_per = round((low - lower) / dist, 2)   
             if low <= lower:
                 sql = "insert into focus_pool(code, date, type_id, subtype_id, cost_price) values(%s,%s,%s,%s,%s)"
                 param = (code, date, 3, 1, close)
                      
                 cursor.execute(sql, param)
                 conn.commit()
-            else:   # ene最接近下轨top50
-                dist_per = (low - lower) * 1.00 / (upper - lower) * 1.00
-                dist_per = round(dist_per, 2)
-                
-                code_dist = (code, dist_per, close)
-                
-                if len(close_lower_list) < 50:
-                    close_lower_list.append(code_dist)
-                else:
-                    close_lower_list = sorted(close_lower_list, key=lambda ene: ene[1])
-                    if close_lower_list[49][1] > dist_per:
-                        close_lower_list.pop()
-                        close_lower_list.append(code_dist)
-                
-        close_lower_list = sorted(close_lower_list, key=lambda ene: ene[1])
-        for ene_tuple in close_lower_list:
-            sql = "insert into focus_pool(code, date, type_id, subtype_id, cost_price) values(%s,%s,%s,%s,%s)"
-            param = (ene_tuple[0], date, 4, 1, ene_tuple[2])
-                
-            cursor.execute(sql, param)
-            conn.commit()
             
-            # 更新或插入dist_per于stocks_extends当中
+            # 更新或插入upper_dist_per、lower_dist_per于stocks_extends当中
             sql = "select id from stocks_extends where code=%s and date=%s and type='S'"
-            param = (ene_tuple[0], date)
+            param = (code, date)
             cursor.execute(sql, param)
             exists = cursor.fetchone()
             
             if exists:
-                sql = "update stocks_extends set dist_per=%s where code=%s and date=%s and type='S'"
+                sql = "update stocks_extends set upper_dist_per=%s, lower_dist_per=%s where code=%s and date=%s and type='S'"
             else:
-                sql = "insert into stocks_extends(dist_per, code, date, type) values(%s, %s, %s, 'S')"
-                
-            param = (ene_tuple[1], ene_tuple[0], date)
+                sql = "insert into stocks_extends(upper_dist_per, lower_dist_per, code, date, type) values(%s, %s, %s, %s, 'S')"
+            
+            param = (upper_dist_per, lower_dist_per, code, date)
             cursor.execute(sql, param)
             conn.commit()
         
@@ -161,6 +143,40 @@ def ene(start = str(date.today()), end = str(date.today())):
     conn.close()
     
     print 'ene end: ', datetime.datetime.now()
+    
+# 接近ene下轨top50
+def handle_close_ene_lower(start = str(date.today()), end = str(date.today())):
+    print 'handle_close_ene_lower start: ', datetime.datetime.now()
+    
+    conn = MySQLdb.connect(host="localhost", user="root", passwd="root", db="stock", charset="utf8")
+    cursor = conn.cursor()
+    
+    sql = "select calendarDate from trade_cal where calendarDate>=%s and calendarDate<=%s and isOpen=1"
+    param = (start, end)
+    cursor.execute(sql, param)
+    cal_results = cursor.fetchall()
+    
+    for cal_row in cal_results:
+        date = cal_row[0]
+        
+        sql = "select s.code, close from stocks_extends s, k_data k where lower_dist_per>0 and s.type='S' and s.date=%s and s.type=k.type and s.date=k.date and s.code=k.code order by lower_dist_per limit 50"
+        param = (date)
+        cursor.execute(sql, param)
+        results = cursor.fetchall()
+        
+        for row in results:
+            code = row[0]
+            cost_price = row[1]
+            
+            sql = "insert into focus_pool(code, date, type_id, subtype_id, cost_price) values(%s, %s, %s, %s, %s)"
+            param = (code, date, 4, 1, cost_price)
+            cursor.execute(sql, param)
+            conn.commit()
+            
+    cursor.close()
+    conn.close()
+    
+    print 'handle_close_ene_lower end: ', datetime.datetime.now()
     
 # 持股线距离（HLD）模型
 def handle_hld(start = str(date.today()), end = str(date.today())):
