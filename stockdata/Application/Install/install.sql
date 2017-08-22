@@ -42,7 +42,6 @@ INSERT INTO `focus_type` VALUES(15, '缩量ma_10d');
 INSERT INTO `focus_type` VALUES(16, '缩量ma_20d');
 INSERT INTO `focus_type` VALUES(17, '缩量ma_60d');
 INSERT INTO `focus_type` VALUES(18, '缩量ma_120d');
-INSERT INTO `focus_type` VALUES(19, 'hld');
 
 DROP TABLE IF EXISTS `action_type`;
 CREATE TABLE `action_type` (
@@ -338,13 +337,33 @@ CREATE TABLE `volume` (
   UNIQUE KEY `code_date` (`code`, `date`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-DROP TABLE IF EXISTS `hld`;
-CREATE TABLE `hld` (
+DROP TABLE IF EXISTS `bigdeals`;
+CREATE TABLE `bigdeals` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `code` varchar(10) NOT NULL DEFAULT '',
   `date` varchar(10) NOT NULL DEFAULT '',
-  `hld` double DEFAULT NULL,
-  `mahld` double DEFAULT NULL,
+  `dvalue` double NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY code_date (`code`, `date`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `bigdeals_realtime`;
+CREATE TABLE `bigdeals_realtime` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `code` varchar(10) NOT NULL DEFAULT '',
+  `date` varchar(10) NOT NULL DEFAULT '',
+  `now` varchar(10) NOT NULL DEFAULT '',
+  `value` double NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY code_date_now (`code`, `date`, `now`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `tick_amount`;
+CREATE TABLE `tick_amount` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `code` varchar(10) NOT NULL DEFAULT '',
+  `date` varchar(10) NOT NULL DEFAULT '',
+  `amount` double NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY code_date (`code`, `date`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
