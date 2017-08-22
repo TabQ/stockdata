@@ -1,0 +1,3 @@
+from statistics import count_bigdeals_realtime
+
+count_bigdeals_realtime()
