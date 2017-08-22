@@ -7,7 +7,7 @@ import time
 import traceback
 import sys
 
-from common import diff_between_two_days, ma_date, max_ma_vol_date, max_vol_price, hld
+from common import diff_between_two_days, ma_date, max_ma_vol_date, max_vol_price
 
 # 处理所有股票的最大成交量及最高收盘价
 def handle_max_vol_price():
@@ -555,9 +555,9 @@ def volume(start = str(date.today()), end = str(date.today())):
     
     print 'volume end: ', datetime.datetime.now()
     
-# 计算持股线距离
-def count_hld(start = str(date.today()), end = str(date.today())):
-    print 'count_hld start: ', datetime.datetime.now()
+# 统计大单
+def count_bigdeals(start = str(date.today()), end = str(date.today())):
+    print 'count_bigdeals start: ', datetime.datetime.now()
     
     conn = MySQLdb.connect(host="localhost", user="root", passwd="root", db="stock", charset="utf8")
     cursor = conn.cursor()
@@ -577,15 +577,133 @@ def count_hld(start = str(date.today()), end = str(date.today())):
         for row in results:
             code = row[0]
             
-            hld_result = hld(cursor, code, date)
-            
-            if hld_result is not None:
-                sql = "insert into hld(code, date, hld) values(%s, %s, %s)"
-                param = (code, date, hld_result)
+            df = ts.get_sina_dd(code, date, vol=200)
+            if df is not None:
+                dvalue = 0
+                for index in df.index:
+                    temp = df.ix[index]
+                    if temp['type'] == '买盘':
+                        dvalue += temp['volume'] * 100 * temp['price']
+                    elif temp['type'] == '卖盘':
+                        dvalue -= temp['volume'] * 100 * temp['price']
+                
+                sql = "insert into bigdeals(code, date, dvalue) values(%s, %s, %s)"
+                param = (code, date, dvalue)
                 cursor.execute(sql, param)
                 conn.commit()
-                
+    
     cursor.close()
     conn.close()
     
-    print 'count_hld end: ', datetime.datetime.now()
+    print 'count_bigdeals end: ', datetime.datetime.now()
+    
+# 实时统计大单
+def count_bigdeals_realtime():
+    print 'count_bigdeals_realtime start: ', datetime.datetime.now()
+
+    conn = MySQLdb.connect(host="localhost", user="root", passwd="root", db="stock", charset="utf8")
+    cursor = conn.cursor()
+    
+    today = str(date.today())
+    morning_start = time.mktime(time.strptime(today + ' 09:25:00', '%Y-%m-%d %H:%M:%S'))
+    morning_end = time.mktime(time.strptime(today + ' 11:30:00', '%Y-%m-%d %H:%M:%S'))
+    afternoon_start = time.mktime(time.strptime(today + ' 13:00:00', '%Y-%m-%d %H:%M:%S'))
+    afternoon_end = time.mktime(time.strptime(today + ' 15:00:00', '%Y-%m-%d %H:%M:%S'))
+    while(True):
+        now = time.time()
+        nowstr = time.strftime('%H:%M', time.localtime(now))
+        if now < morning_start or (now > morning_end and now < afternoon_start):
+            continue
+        if now > afternoon_end:
+            break
+        
+        sql = "select code from stocks_info where type='S'"
+        cursor.execute(sql)
+        results = cursor.fetchall()
+        
+        top10_list = []
+        for row in results:
+            code = row[0]
+            
+            df = ts.get_sina_dd(code, today, vol=200)
+            if df is not None:
+                dvalue = 0
+                for index in df.index:
+                    temp = df.ix[index]
+                    if temp['type'] == '买盘':
+                        dvalue += temp['volume'] * 100 * temp['price']
+                    elif temp['type'] == '卖盘':
+                        dvalue -= temp['volume'] * 100 * temp['price']
+                        
+                if len(top10_list) < 10:
+                    top10_list.append((code, dvalue))
+                else:
+                    top10_list = sorted(top10_list, key=lambda t:t[1], reverse = True)
+                    if top10_list[9][1] < dvalue:
+                        top10_list.pop()
+                        top10_list.append((code, dvalue))  
+        
+        for item in top10_list:
+            sql = "insert into `bigdeals_realtime`(`code`, `date`, `now`, `value`) values(%s, %s, %s, %s)"
+            param = (item[0], today, nowstr, item[1])
+            cursor.execute(sql, param)
+            conn.commit()
+        
+    cursor.close()
+    conn.close()
+    
+    print 'count_bigdeals_realtime end: ', datetime.datetime.now()
+    
+# 统计历史分笔的大额（50万元）数据
+def count_tick_amount(start = str(date.today()), end = str(date.today())):
+    print 'count_tick_amount start: ', datetime.datetime.now()
+    
+    # 单笔大额定义为50万
+    big_amount = 500000
+    
+    conn = MySQLdb.connect(host="localhost", user="root", passwd="root", db="stock", charset="utf8")
+    cursor = conn.cursor()
+    
+    sql = "select calendarDate from trade_cal where calendarDate>=%s and calendarDate<=%s and isOpen=1"
+    param = (start, end)
+    cursor.execute(sql, param)
+    cal_results = cursor.fetchall()
+    
+    for cal_row in cal_results:
+        date = cal_row[0]
+        
+        sql = "select code from stocks_info where type='S'"
+        cursor.execute(sql)
+        results = cursor.fetchall()
+        
+        for row in results:
+            code = row[0]
+            
+            loop = True
+            while(loop):
+                try:
+                    df = ts.get_tick_data(code, date, pause=3)
+                    if df is not None:
+                        amount_total = 0
+                        for index in df.index:
+                            temp = df.ix[index]
+                            if temp['amount'] >= big_amount:
+                                if temp['type'] == '买盘':
+                                    amount_total += temp['amount']
+                                elif temp['type'] == '卖盘':
+                                    amount_total -= temp['amount']
+                                    
+                        sql = "insert into `tick_amount`(`code`, `date`, `amount`) values(%s, %s, %s)"
+                        param = (code, date, amount_total)
+                        cursor.execute(sql, param)
+                        conn.commit()
+                        
+                    loop = False
+                except:
+                    print code
+    
+    cursor.close()
+    conn.close()
+    
+    print 'count_tick_amount end: ', datetime.datetime.now()
+    

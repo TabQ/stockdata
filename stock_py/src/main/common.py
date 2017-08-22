@@ -31,55 +31,6 @@ def diff_between_two_days(day1, day2):
         
     return (second1 - second2) / 86400
 
-# 持股线距离（HLD）
-def hld(cursor, code, date = str(date.today()), type = 'S', period = 'd', n = 14):
-    code = get_code(code, type)
-    
-    if period == 'd':
-        sql = "select close from k_data where code=%s and date<=%s and type=%s order by date desc limit %s"
-        param = (code, date, type, n)
-        cursor.execute(sql, param)
-        close_results = cursor.fetchall()
-        
-        if len(close_results) < n:
-            return None
-        else:
-            close = close_results[0][0]
-            close_list = []
-            for close_row in close_results:
-                close_list.insert(0, close_row[0])
-            
-            return close - round(ema(close_list), 2)
-    else:
-        period_list = [date]
-        if period == 'w':
-            sql = "select calendarDate from trade_cal where isWeekEnd = 1 and calendarDate < %s order by calendarDate desc limit %s"
-        else:
-            sql = "select calendarDate from trade_cal where isMonthEnd = 1 and calendarDate < %s order by calendarDate desc limit %s"
-        param = (date, n-1)
-        cursor.execute(sql, param)
-        cal_results = cursor.fetchall()
-        
-        for cal_row in cal_results:
-            period_list.append(cal_row[0])
-        
-        if len(period_list) < n:
-            return None
-        else:
-            close_list = []
-            for period in period_list:
-                sql = "select close from k_data where code=%s and date=%s and type=%s limit 1"
-                param = (code, period, type)
-                cursor.execute(sql, param)
-                close_result = cursor.fetchone()
-                
-                if close_result:
-                    close_list.insert(0, close_result[0])
-                else:
-                    return None
-                
-            return close_list[len(close_list) - 1] - round(ema(close_list), 2)
-
 # 计算某支股票某日的某条移动平均线
 def ma_date(cursor, code, type = 'S', date = str(date.today()), n = 5):
     code = get_code(code, type)
