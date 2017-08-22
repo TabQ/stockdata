@@ -7,7 +7,7 @@ import datetime
 import time
 import sys
 
-from common import diff_between_two_days, ma_date, hld
+from common import diff_between_two_days, ma_date
 from functions import ma, ema
 
 def volume_break(start = str(date.today()), end = str(date.today())):
@@ -254,3 +254,81 @@ def handle_hld(start = str(date.today()), end = str(date.today())):
     conn.close()
     
     print 'handle_hld end: ', datetime.datetime.now()
+    
+# 二次涨停选股法
+def second_limitup(start = str(date.today()), end = str(date.today())):
+    print 'second_limitup start: ', datetime.datetime.now()
+    
+    conn = MySQLdb.connect(host="localhost", user="root", passwd="root", db="stock", charset="utf8")
+    cursor = conn.cursor()
+    
+    sql = "select calendarDate from trade_cal where calendarDate>=%s and calendarDate<=%s and isOpen=1"
+    param = (start, end)
+    cursor.execute(sql, param)
+    cal_results = cursor.fetchall()
+    
+    for cal_row in cal_results:
+        date = cal_row[0]
+        
+        sql = "select code, high, low from k_data where type='S' and date=%s and close=high"
+        param = (date)
+        cursor.execute(sql, param)
+        close_high_results = cursor.fetchall()
+        
+        for close_high_row in close_high_results:
+            code = close_high_row[0]
+            high = close_high_row[1]
+            low = close_high_row[2]
+            
+            sql = "select close from k_data where type='S' and code=%s and date<%s order by date desc limit 1"
+            param = (code, date)
+            cursor.execute(sql, param)
+            pre_row = cursor.fetchone()
+            
+            if pre_row:
+                if (high - pre_row[0]) / pre_row[0] < 0.099:
+                    continue
+                
+            sql = "select date, high, low, close from k_data where type='S' and code=%s and date<%s and close=high order by date desc limit 59"
+            param = (code, date)
+            cursor.execute(sql, param)
+            his_results = cursor.fetchall()
+            
+            for his_row in his_results:
+                his_date = his_row[0]
+                his_high = his_row[1]
+                his_low = his_row[2]
+                his_close = his_row[3]
+                
+                if his_high != his_close:
+                    continue
+                
+                sql = "select close from k_data where type='S' and code=%s and date<%s order by date desc limit 1"
+                param = (code, his_date)
+                cursor.execute(sql, param)
+                his_pre_row = cursor.fetchone()
+                
+                if his_pre_row:
+                    if (his_close - his_pre_row[0]) / his_pre_row[0] < 0.099:
+                        continue
+                    
+                if low >= his_high or high <= his_low:
+                    continue
+                elif low >= his_low:
+                    if his_high < high:
+                        if (his_high - low) / (high - low) >= 0.5:
+                            print code, ' ', date, ' ', his_date
+                    else:
+                        print code, ' ', date, ' ', his_date
+                elif his_low >= low:
+                    if high < his_high:
+                        if (high - his_low) / (high - low) >= 0.5:
+                            print code, ' ', date, ' ', his_date
+                    else:
+                        if (his_high - his_low) / (high - low) >= 0.5:
+                            print code, ' ', date, ' ', his_date           
+        
+    cursor.close()
+    conn.close()
+    
+    print 'second_limitup end: ', datetime.datetime.now()
