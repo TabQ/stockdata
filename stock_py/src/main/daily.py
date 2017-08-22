@@ -6,9 +6,9 @@ from statistics import *
 today = str(date.today())
 start = today
 end = today
-  
-# today = '2017-06-26'
-# start = '2017-06-23'
+
+# start = '2017-08-14'  
+# today = '2017-08-14'
 # end = today
 
 super_wave(today)
@@ -27,3 +27,6 @@ p_change(start, end)
 p2max(start, end)
 
 focus_pool_rate(today)
+
+# 统计大单
+count_bigdeals(today, today)
