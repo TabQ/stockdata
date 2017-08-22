@@ -38,9 +38,8 @@ class PerdayController extends Controller {
             }
         }
 
-        $diffDate = date('Y-m-d',strtotime($lastDay) - 1*30*86400);
-        $where['timeToMarket'] = array('elt', $diffDate);
-        $where['timeToMarket'] = array('neq', 0);
+        $diffDate = date('Ymd',strtotime($lastDay) - 1*30*86400);
+        $where['timeToMarket'] = array(array('elt', $diffDate), array('neq', 0), 'and');
         $count = M('stocks_extends')->where($map)->join("left join stocks_info on stocks_extends.code = stocks_info.code and stocks_extends.type='S'")->where($where)->count();
         $page = new \Think\Page($count, PAGE_COUNT);
         $show = $page->show();
@@ -94,9 +93,8 @@ class PerdayController extends Controller {
             }
         }
 
-        $diffDate = date('Y-m-d',strtotime($lastDay) - 1*30*86400);
-        $where['timeToMarket'] = array('elt', $diffDate);
-        $where['timeToMarket'] = array('neq', 0);
+        $diffDate = date('Ymd',strtotime($lastDay) - 1*30*86400);
+        $where['timeToMarket'] = array(array('elt', $diffDate), array('neq', 0), 'and');
         $count = M('stocks_extends')->where($map)->join("left join stocks_info on stocks_extends.code = stocks_info.code and stocks_extends.type='S'")->where($where)->count();
         $page = new \Think\Page($count, PAGE_COUNT);
         $show = $page->show();
