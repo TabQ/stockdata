@@ -625,23 +625,26 @@ def count_bigdeals_realtime():
         for row in results:
             code = row[0]
             
-            df = ts.get_sina_dd(code, today, vol=200)
-            if df is not None:
-                dvalue = 0
-                for index in df.index:
-                    temp = df.ix[index]
-                    if temp['type'] == '买盘':
-                        dvalue += temp['volume'] * 100 * temp['price']
-                    elif temp['type'] == '卖盘':
-                        dvalue -= temp['volume'] * 100 * temp['price']
-                        
-                if len(top10_list) < 10:
-                    top10_list.append((code, dvalue))
-                else:
-                    top10_list = sorted(top10_list, key=lambda t:t[1], reverse = True)
-                    if top10_list[9][1] < dvalue:
-                        top10_list.pop()
-                        top10_list.append((code, dvalue))  
+            try:
+                df = ts.get_sina_dd(code, today, vol=200)
+                if df is not None:
+                    dvalue = 0
+                    for index in df.index:
+                        temp = df.ix[index]
+                        if temp['type'] == '买盘':
+                            dvalue += temp['volume'] * 100 * temp['price']
+                        elif temp['type'] == '卖盘':
+                            dvalue -= temp['volume'] * 100 * temp['price']
+                            
+                    if len(top10_list) < 10:
+                        top10_list.append((code, dvalue))
+                    else:
+                        top10_list = sorted(top10_list, key=lambda t:t[1], reverse = True)
+                        if top10_list[9][1] < dvalue:
+                            top10_list.pop()
+                            top10_list.append((code, dvalue))  
+            except:
+                pass
         
         for item in top10_list:
             sql = "insert into `bigdeals_realtime`(`code`, `date`, `now`, `value`) values(%s, %s, %s, %s)"

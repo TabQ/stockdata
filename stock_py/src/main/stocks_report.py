@@ -11,8 +11,8 @@ print datetime.datetime.now()
 
 today = str(date.today())
 
-year = 2016
-season = 3
+year = 2017
+season = 1
 
 conn = MySQLdb.connect(host="localhost", user="root", passwd="root", db="stock", charset="utf8")
 cursor = conn.cursor()

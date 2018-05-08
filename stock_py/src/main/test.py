@@ -2,28 +2,21 @@
 import tushare as ts
 import MySQLdb
 from datetime import date
-import datetime
-import time
-import sys
-from common import *
-from statistics import p_change
+from model import second_limitup
+from statistics import count_bigdeals, count_bigdeals_realtime, count_tick_amount
 
-# from main import model
-# from model import volume_break
-# 
-# conn = MySQLdb.connect(host="localhost", user="root", passwd="root", db="stock", charset="utf8")
-# cursor = conn.cursor()
-# 
-# for i in range(369, 393):
-#     sql = "select calendarDate from trade_cal where id="+str(i)
-#     cursor.execute(sql)
-#     result = cursor.fetchone()
-#     
-#     today = result[0]
-#     volume_break(today)
-#     model(today)
-#         
-# cursor.close()
-# conn.close()
+# today = str(date.today())
+today = '2017-08-16'
 
-p_change('2017-02-07', '2017-02-07')
+# second_limitup('2017-02-01', '2017-02-28')
+# count_bigdeals_realtime()
+# count_bigdeals(today, today)
+
+# df = ts.get_sina_dd('600516', '2017-08-16', 200)
+# count = 0
+# for index in df.index:
+#     temp = df.ix[index]
+#     print temp
+
+
+count_tick_amount(today, today)

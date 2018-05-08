@@ -7,8 +7,8 @@ today = str(date.today())
 start = today
 end = today
 
-# start = '2017-08-14'  
-# today = '2017-08-14'
+# start = '2017-11-09'  
+# today = '2017-11-10'
 # end = today
 
 super_wave(today)
@@ -29,4 +29,4 @@ p2max(start, end)
 focus_pool_rate(today)
 
 # 统计大单
-count_bigdeals(today, today)
+# count_bigdeals(start, end)
